@@ -22,7 +22,7 @@ function Header() {
                     </div>
                     <div className="flex flex-1 items-center justify-end md:justify-end">
                         <nav aria-label="Global" className="hidden md:block">
-                            <ul className="flex items-center justify-center gap-10 font-bold text-[18px] ml-75" >
+                            <ul className="flex items-center justify-center gap-10 font-bold text-[18px] ml-70" >
                                 <li>
                                     <a className="text-gray-500 transition hover:text-gray-500/75" href="#"> Home </a>
                                 </li>
