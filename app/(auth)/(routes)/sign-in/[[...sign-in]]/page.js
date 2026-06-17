@@ -8,14 +8,14 @@ export default function SignInPage() {
         <section className="relative flex h-32 items-end bg-gray-900 lg:col-span-5 lg:h-full xl:col-span-6">
           <img
             alt="Car Nest Banner"
-            src="https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-1.2.1&auto=format&fit=crop&w=870&q=80"
+            src="/rolls-royce.png"
             className="absolute inset-0 h-full w-full object-cover opacity-80"
           />
           <div className="hidden lg:relative lg:block lg:p-12 text-white">
-            <h2 className="text-2xl font-bold sm:text-3xl md:text-4xl">
+            <h2 className="text-4xl font-bold sm:text-3xl md:text-5xl">
               Welcome to DriveNest
             </h2>
-            <p className="mt-4 leading-relaxed text-white/90">
+            <p className="mt-4  text-xl leading-relaxed text-white/90">
               Discover and list premium pre-owned and new cars in your area.
             </p>
           </div>

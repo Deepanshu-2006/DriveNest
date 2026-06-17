@@ -9,7 +9,7 @@ function Hero() {
     return (
         <div className="w-full">
             {/* Top section with background */}
-            <div className="relative w-full bg-emerald-50 pt-16 md:pt-20 px-4 pb-32 md:pb-72">
+            <div className="relative w-full bg-teal-50 pt-16 md:pt-20 px-4 pb-32 md:pb-72">
                 <div className="max-w-7xl mx-auto text-center flex flex-col items-center">
                     {/* Small Tagline */}
                     <p className="text-teal-600 text-sm md:text-base font-semibold uppercase tracking-wider mb-3">
