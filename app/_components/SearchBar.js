@@ -16,7 +16,7 @@ function SearchBar() {
                 {/* Dropdown 1: Cars */}
                 <div className="relative flex items-center">
                     <Select>
-                        <SelectTrigger className="w-40 border-none bg-transparent shadow-none text-md font-semibold">
+                        <SelectTrigger className="w-40 border border-transparent focus:border-b-2 data-[state=open]:border-black bg-transparent shadow-none text-md font-semibold transition-all rounded-lg px-3 py-1.5">
                             <SelectValue placeholder="Cars" />
                         </SelectTrigger>
                         <SelectContent>
@@ -32,7 +32,7 @@ function SearchBar() {
                 {/* Dropdown 2: Makes */}
                 <div className="relative flex items-center">
                     <Select>
-                        <SelectTrigger className="w-40 border-none bg-transparent shadow-none text-md font-semibold">
+                        <SelectTrigger className="w-40 border border-transparent focus:border-b-2 data-[state=open]:border-black bg-transparent shadow-none text-md font-semibold transition-all rounded-lg px-3 py-1.5">
                             <SelectValue placeholder="Car Makes" />
                         </SelectTrigger>
                         <SelectContent>
@@ -51,7 +51,7 @@ function SearchBar() {
                 {/* Dropdown 3: Price */}
                 <div className="relative flex items-center">
                     <Select>
-                        <SelectTrigger className="w-40 border-none bg-transparent shadow-none text-md font-semibold">
+                        <SelectTrigger className="w-40 border border-transparent focus:border-black-2 data-[state=open]:border-black bg-transparent shadow-none text-md font-semibold transition-all rounded-lg px-3 py-1.5">
                             <SelectValue placeholder="Pricing" />
                         </SelectTrigger>
                         <SelectContent>
@@ -65,7 +65,7 @@ function SearchBar() {
                 </div>
 
                 {/* Search Button Icon */}
-                <button className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 transition-all duration-200 cursor-pointer shadow-md focus:outline-none hover:scale-105 active:scale-95">
+                <button className="flex items-center justify-center bg-teal-600 hover:bg-teal-700 text-white rounded-full p-3 transition-all duration-200 cursor-pointer shadow-md focus:outline-none hover:scale-105 active:scale-95">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
                     </svg>
