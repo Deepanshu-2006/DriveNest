@@ -47,8 +47,8 @@ function Header() {
                         {isSignedIn ? (
                             <div className="flex items-center gap-4">
                                 <Link
-                                    className="block rounded-full bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 shadow-sm"
-                                    href="/submit-listing"
+                                    className="block rounded-full bg-teal-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-teal-700  hover:font-extrabold hover:scale-105 transition-all shadow-sm"
+                                    href="/profile"
                                 >
                                     Submit Listing
                                 </Link>
