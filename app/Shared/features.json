@@ -1,0 +1,228 @@
+{
+  "features": [
+    {
+      "label": "Air Conditioner",
+      "name": "airConditioner",
+      "icon": "FaSnowflake",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Digital Odometer",
+      "name": "digitalOdometer",
+      "icon": "FaTachometerAlt",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Heater",
+      "name": "heater",
+      "icon": "FaFire",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Leather Seats",
+      "name": "leatherSeats",
+      "icon": "FaChair",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Panoramic Moonroof",
+      "name": "panoramicMoonroof",
+      "icon": "FaSun",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Tachometer",
+      "name": "tachometer",
+      "icon": "FaTachometerAlt",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Touchscreen Display",
+      "name": "touchscreenDisplay",
+      "icon": "FaTabletAlt",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Anti-lock Braking (ABS)",
+      "name": "abs",
+      "icon": "FaShieldAlt",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Brake Assist",
+      "name": "brakeAssist",
+      "icon": "FaShieldAlt",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Child Safety Locks",
+      "name": "childSafetyLocks",
+      "icon": "FaLock",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Driver Air Bag",
+      "name": "driverAirBag",
+      "icon": "FaUserShield",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Power Door Locks",
+      "name": "powerDoorLocks",
+      "icon": "FaLock",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Stability Control",
+      "name": "stabilityControl",
+      "icon": "FaShieldAlt",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Traction Control",
+      "name": "tractionControl",
+      "icon": "FaShieldAlt",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Fog Lights Front",
+      "name": "fogLightsFront",
+      "icon": "FaLightbulb",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Rain Sensing Wiper",
+      "name": "rainSensingWiper",
+      "icon": "FaCloudRain",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Rear Spoiler",
+      "name": "rearSpoiler",
+      "icon": "FaCar",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Windows - Electric",
+      "name": "windowsElectric",
+      "icon": "FaWindowMaximize",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Comfort & Convenience",
+      "name": "comfortConvenience",
+      "icon": "FaCouch",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Android Auto",
+      "name": "androidAuto",
+      "icon": "FaAndroid",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Apple CarPlay",
+      "name": "appleCarPlay",
+      "icon": "FaApple",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Bluetooth",
+      "name": "bluetooth",
+      "icon": "FaBluetooth",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "HomeLink",
+      "name": "homeLink",
+      "icon": "FaHome",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Power Steering",
+      "name": "powerSteering",
+      "icon": "FaLifeRing",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Vanity Mirror",
+      "name": "vanityMirror",
+      "icon": "FaSearch",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Navigation System",
+      "name": "navigationSystem",
+      "icon": "FaMapMarkerAlt",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Alloy Wheels",
+      "name": "alloyWheels",
+      "icon": "FaCircle",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Parking Sensors",
+      "name": "parkingSensors",
+      "icon": "FaBroadcastTower",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Back Camera",
+      "name": "backCamera",
+      "icon": "FaCamera",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Heated Seats",
+      "name": "heatedSeats",
+      "icon": "FaFire",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Keyless Entry",
+      "name": "keylessEntry",
+      "icon": "FaKey",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    },
+    {
+      "label": "Cruise Control",
+      "name": "cruiseControl",
+      "icon": "FaTachometerAlt",
+      "type": "checkbox",
+      "fieldtype": "checkbox"
+    }
+  ]
+}

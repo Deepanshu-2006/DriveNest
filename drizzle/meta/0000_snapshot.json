@@ -1,0 +1,307 @@
+{
+  "id": "6883405f-c6a9-447b-b76c-efd295cf93ef",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.carFeatures": {
+      "name": "carFeatures",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "carListingId": {
+          "name": "carListingId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "featureName": {
+          "name": "featureName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "carFeatures_carListingId_carListing_id_fk": {
+          "name": "carFeatures_carListingId_carListing_id_fk",
+          "tableFrom": "carFeatures",
+          "tableTo": "carListing",
+          "columnsFrom": [
+            "carListingId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.carImages": {
+      "name": "carImages",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "imageUrl": {
+          "name": "imageUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "carListingId": {
+          "name": "carListingId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "carImages_carListingId_carListing_id_fk": {
+          "name": "carImages_carListingId_carListing_id_fk",
+          "tableFrom": "carImages",
+          "tableTo": "carListing",
+          "columnsFrom": [
+            "carListingId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.carListing": {
+      "name": "carListing",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "listingTitle": {
+          "name": "listingTitle",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tagline": {
+          "name": "tagline",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "originalPrice": {
+          "name": "originalPrice",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sellingPrice": {
+          "name": "sellingPrice",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "condition": {
+          "name": "condition",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "make": {
+          "name": "make",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model": {
+          "name": "model",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "driveType": {
+          "name": "driveType",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transmission": {
+          "name": "transmission",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fuelType": {
+          "name": "fuelType",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mileage": {
+          "name": "mileage",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "engine": {
+          "name": "engine",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cylinder": {
+          "name": "cylinder",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "color": {
+          "name": "color",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "door": {
+          "name": "door",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vin": {
+          "name": "vin",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "carListing_userId_users_id_fk": {
+          "name": "carListing_userId_users_id_fk",
+          "tableFrom": "carListing",
+          "tableTo": "users",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "postedOn": {
+          "name": "postedOn",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

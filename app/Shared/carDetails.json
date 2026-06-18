@@ -42,7 +42,7 @@
     "type": "select",
     "required": true,
     "icon": "FaCheckCircle",
-    "options": ["New", "Used"]
+    "options": ["New", "Used", "Certified Pre-Owned"]
   },
   {
     "name": "make",
@@ -50,7 +50,32 @@
     "type": "select",
     "required": true,
     "icon": "FaAward",
-    "options": ["Audi", "BMW", "Mercedes"]
+    "options": [
+      "Aston Martin",
+      "Audi",
+      "BMW",
+      "Chevrolet",
+      "Ferrari",
+      "Ford",
+      "Honda",
+      "Hyundai",
+      "Jaguar",
+      "Jeep",
+      "Kia",
+      "Lamborghini",
+      "Land Rover",
+      "Lexus",
+      "Mazda",
+      "Mercedes",
+      "Mitsubishi",
+      "Nissan",
+      "Porsche",
+      "Subaru",
+      "Tesla",
+      "Toyota",
+      "Volkswagen",
+      "Volvo"
+    ]
   },
   {
     "name": "model",
@@ -62,9 +87,36 @@
   {
     "name": "year",
     "label": "Year *",
-    "type": "number",
+    "type": "select",
     "required": true,
-    "icon": "FaCalendar"
+    "icon": "FaCalendar",
+    "options": [
+      "2026",
+      "2025",
+      "2024",
+      "2023",
+      "2022",
+      "2021",
+      "2020",
+      "2019",
+      "2018",
+      "2017",
+      "2016",
+      "2015",
+      "2014",
+      "2013",
+      "2012",
+      "2011",
+      "2010",
+      "2009",
+      "2008",
+      "2007",
+      "2006",
+      "2005",
+      "2004",
+      "2003",
+      "2002"
+    ]
   },
   {
     "name": "driveType",
@@ -100,9 +152,27 @@
   {
     "name": "engine",
     "label": "Engine Size",
-    "type": "text",
+    "type": "select",
     "required": false,
-    "icon": "FaWrench"
+    "icon": "FaWrench",
+    "options": [
+      "1.0L",
+      "1.2L",
+      "1.4L",
+      "1.5L",
+      "1.6L",
+      "1.8L",
+      "2.0L",
+      "2.2L",
+      "2.4L",
+      "2.5L",
+      "3.0L",
+      "3.5L",
+      "4.0L",
+      "4.5L",
+      "5.0L",
+      "Electric"
+    ]
   },
   {
     "name": "cylinder",
