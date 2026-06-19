@@ -5,6 +5,7 @@ import carDetails from '../Shared/carDetails.json'
 import InputField from './components/InputField'
 import DropdownField from './components/DropdownField'
 import TextAreaField from './components/TextAreaField'
+import ImagesUpload from './components/ImagesUpload'
 import { Separator } from '@/components/ui/separator'
 import features from '../Shared/features.json'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -30,13 +31,16 @@ function AddListing() {
         setLoading(true);
 
         try {
-            // Separate feature checkboxes from main car details
+            // Separate feature checkboxes, images, and main car details from formData
             const carDetailKeys = carDetails.carDetails.map(item => item.name);
             const details = {};
             const featuresObj = {};
+            let images = [];
 
             Object.entries(formData).forEach(([key, value]) => {
-                if (carDetailKeys.includes(key)) {
+                if (key === 'images') {
+                    images = value;
+                } else if (carDetailKeys.includes(key)) {
                     details[key] = value;
                 } else {
                     featuresObj[key] = value;
@@ -46,6 +50,7 @@ function AddListing() {
             const submissionData = {
                 ...details,
                 features: featuresObj,
+                images: images,
                 userEmail: user?.primaryEmailAddress?.emailAddress,
                 userName: user?.fullName || 'Anonymous'
             };
@@ -101,6 +106,10 @@ function AddListing() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                        {/* Images Upload */}
+                        <div>
+                            <ImagesUpload setImages={(urls) => handleInputChange('images', urls)} />
                         </div>
                         {/* Submit Button */}
                         <div>

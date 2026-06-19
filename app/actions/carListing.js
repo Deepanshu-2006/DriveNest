@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/configs/db";
-import { CarListing, Users, CarFeatures } from "@/configs/schema";
+import { CarListing, Users, CarFeatures, CarImages } from "@/configs/schema";
 import { eq } from "drizzle-orm";
 
 export async function createCarListing(data) {
@@ -47,7 +47,16 @@ export async function createCarListing(data) {
 
     const carListingId = result[0].id;
 
-    // 3. Map features relationally in the CarFeatures table (only insert checked ones)
+    // 3. Insert images relationally in the CarImages table
+    if (data.images && data.images.length > 0) {
+      const imageInsertions = data.images.map(url => ({
+        imageUrl: url,
+        carListingId: carListingId
+      }));
+      await db.insert(CarImages).values(imageInsertions);
+    }
+
+    // 4. Map features relationally in the CarFeatures table (only insert checked ones)
     const featureInsertions = [];
     if (data.features) {
       Object.entries(data.features).forEach(([featureName, isChecked]) => {
