@@ -5,6 +5,7 @@ import { IoClose, IoStar } from 'react-icons/io5'
 function ImagesUpload({ setImages }) {
     const [selectedFileList, setSelectedFileList] = useState([]);
     const [uploading, setUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
     
     const onFileSelected = async (event)=>{
         const files = event.target.files;
@@ -19,6 +20,11 @@ function ImagesUpload({ setImages }) {
         }
 
         setUploading(true);
+        setUploadProgress(0);
+
+        const totalFiles = files.length;
+        let completedCount = 0;
+
         const uploadPromises = Array.from(files).map(async (file) => {
             const formData = new FormData();
             formData.append("file", file);
@@ -36,6 +42,11 @@ function ImagesUpload({ setImages }) {
                 }
 
                 const data = await res.json();
+                
+                // Track progress incrementally
+                completedCount++;
+                setUploadProgress(Math.round((completedCount / totalFiles) * 100));
+
                 return data.secure_url;
             } catch (err) {
                 console.error("Individual file upload error:", err);
@@ -87,7 +98,10 @@ function ImagesUpload({ setImages }) {
     return (
         <div>
             <Separator className="my-5 bg-gray-200 w-full mx-auto h-0.5" />
-            <h2 className='font-bold text-2xl mb-3 mt-4'>Upload Car Images</h2>
+            <h2 className='font-bold text-2xl mb-3 mt-4 flex items-center gap-1.5'>
+                <span>Upload Car Images</span>
+                <span className='text-red-600 font-extrabold'>*</span>
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                 {selectedFileList.map((image, index)=>(
                     <div key={index} className={`relative group rounded-xl overflow-hidden border-2 transition-all duration-300 ${index === 0 ? 'border-teal-500 shadow-md ring-2 ring-teal-500/20' : 'border-slate-200'}`}>
@@ -124,10 +138,17 @@ function ImagesUpload({ setImages }) {
                 <label htmlFor="upload-images" className={uploading ? "pointer-events-none opacity-60" : ""}>
                     <div className='flex flex-col items-center justify-center cursor-pointer bg-teal-100 rounded-xl border-dotted border-3 border-teal-500 p-20 hover:shadow-lg hover:font-medium hover:scale-102 transition-all duration-200 h-32 w-full'>
                         {uploading ? (
-                            <>
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mb-2"></div>
-                                <h2 className='text-gray-500 text-center font-bold animate-pulse text-sm'>Uploading...</h2>
-                            </>
+                            <div className="w-full max-w-40 flex flex-col items-center">
+                                <span className="text-teal-600 text-xs font-bold mb-2">
+                                    Uploading ({uploadProgress}%)
+                                </span>
+                                <div className="w-full bg-teal-200/50 rounded-full h-1.5 overflow-hidden border border-teal-200">
+                                    <div 
+                                        className="bg-teal-600 h-full rounded-full transition-all duration-300 ease-out" 
+                                        style={{ width: `${uploadProgress}%` }}
+                                    />
+                                </div>
+                            </div>
                         ) : (
                             <>
                                 <h2 className='text-4xl text-gray-500' >+</h2>

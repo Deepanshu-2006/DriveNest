@@ -5,6 +5,7 @@ import gearshift from '@/public/gearshift.png'
 import speedometer from '@/public/speedometer.png'
 import { Separator } from '@/components/ui/separator'
 import featuresData from '../../Shared/features.json'
+import carDetails from '../../Shared/carDetails.json'
 import { Eye, MapPin, Calendar, Car, Sparkles, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react'
 
 function LivePreviewCard({ formData = {}, user = null }) {
@@ -99,6 +100,15 @@ function LivePreviewCard({ formData = {}, user = null }) {
   
   const condition = formData.condition || 'New'
   const vin = formData.vin || ''
+
+  // Validate if all required fields in carDetails are filled in formData
+  const requiredFields = carDetails.carDetails.filter(item => item.required)
+  const isReadyToPost = requiredFields.every(field => {
+    const val = formData[field.name]
+    if (val === undefined || val === null) return false
+    if (typeof val === 'string' && val.trim() === '') return false
+    return true
+  }) && !!(formData.images && formData.images.length > 0)
 
   // Condition Badge Light Translucent Styling
   const getConditionBadgeStyle = (cond) => {
@@ -324,21 +334,28 @@ function LivePreviewCard({ formData = {}, user = null }) {
           <Separator className="bg-slate-200/80 h-px my-4" />
 
           {/* Footer containing Price info */}
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-4 mb-5">
             <div className="flex flex-col">
               {originalPrice && (
-                <span className="text-[10px] text-slate-400 line-through font-medium leading-none">
+                <span className="text-sm text-slate-400 line-through font-semibold leading-none">
                   ${originalPrice}
                 </span>
               )}
-              <h2 className={`font-extrabold text-2xl leading-none mt-1 transition-all duration-300 ${hasSellingPrice ? 'text-teal-600' : 'text-slate-400/80 font-semibold italic'}`}>
+              <h2 className={`font-extrabold text-2xl leading-none mt-1 transition-all duration-300 ${hasSellingPrice ? 'text-teal-600' : 'text-slate-400/80 font-bold italic text-md'}`}>
                 ${sellingPrice}
               </h2>
             </div>
-            <div className="flex items-center gap-1 text-slate-400 text-xs">
-              <MapPin className="w-3.5 h-3.5 text-slate-400" />
-              <span className="font-medium text-[11px]">Ready to post</span>
-            </div>
+            {isReadyToPost ? (
+              <div className="flex items-center gap-1 text-emerald-600 text-xs bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 font-bold shadow-sm shadow-emerald-500/5 transition-all duration-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Ready to post</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 text-rose-500 text-xs bg-rose-50 px-2 py-1 rounded-md border border-rose-100 font-bold transition-all duration-300 mt-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                <span>Can't Post</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

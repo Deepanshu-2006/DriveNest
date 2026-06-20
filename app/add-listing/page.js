@@ -30,6 +30,12 @@ function AddListing() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!formData.images || formData.images.length === 0) {
+            alert("Please upload at least one image before submitting.");
+            return;
+        }
+        
         setLoading(true);
 
         try {
@@ -71,6 +77,14 @@ function AddListing() {
             setLoading(false);
         }
     }
+
+    const requiredFields = carDetails.carDetails.filter(item => item.required);
+    const isFormValid = requiredFields.every(field => {
+        const val = formData[field.name];
+        if (val === undefined || val === null) return false;
+        if (typeof val === 'string' && val.trim() === '') return false;
+        return true;
+    }) && !!(formData.images && formData.images.length > 0);
 
     return (
         <div className="bg-slate-50 min-h-screen">
@@ -122,11 +136,24 @@ function AddListing() {
                             </div>
                             
                             {/* Submit Button */}
-                            <div className='border-t border-slate-100 pt-6 mt-8 flex justify-end'>
+                            <div className='border-t border-slate-100 pt-6 mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between'>
+                                <div className="text-sm font-medium">
+                                    {isFormValid ? (
+                                        <p className="text-emerald-600 flex items-center gap-1.5 font-bold animate-fade-in">
+                                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                            <span>Ready to publish! All required fields are completed.</span>
+                                        </p>
+                                    ) : (
+                                        <p className="text-rose-500 flex items-center gap-1.5 font-semibold">
+                                            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                                            <span>Complete all required fields (*) and upload photos to publish.</span>
+                                        </p>
+                                    )}
+                                </div>
                                 <button 
                                     type='submit' 
                                     disabled={loading}
-                                    className='bg-teal-600 text-white px-8 py-3 font-bold rounded-full text-md cursor-pointer hover:bg-teal-700 hover:shadow-lg transition-all duration-200 disabled:bg-slate-300 disabled:cursor-not-allowed'
+                                    className='bg-teal-600 text-white px-8 py-3 font-bold rounded-full text-md cursor-pointer hover:bg-teal-700 hover:shadow-lg transition-all duration-200 disabled:bg-slate-300 disabled:cursor-not-allowed w-full sm:w-auto text-center'
                                 >
                                     {loading ? 'Submitting...' : 'Submit Listing'}
                                 </button>

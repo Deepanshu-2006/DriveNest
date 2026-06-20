@@ -34,11 +34,11 @@ export const CarListing = pgTable('carListing', {
 export const CarImages = pgTable('carImages', {
   id: serial('id').primaryKey(),
   imageUrl: text('imageUrl').notNull(),
-  carListingId: integer('carListingId').references(() => CarListing.id).notNull()
+  carListingId: integer('carListingId').references(() => CarListing.id, { onDelete: 'cascade' }).notNull()
 });
 
 export const CarFeatures = pgTable('carFeatures', {
   id: serial('id').primaryKey(),
-  carListingId: integer('carListingId').references(() => CarListing.id).notNull(),
+  carListingId: integer('carListingId').references(() => CarListing.id, { onDelete: 'cascade' }).notNull(),
   featureName: varchar('featureName', { length: 255 }).notNull()
 });
