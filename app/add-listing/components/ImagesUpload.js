@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Separator } from "@/components/ui/separator"
-import { IoClose } from 'react-icons/io5'
+import { IoClose, IoStar } from 'react-icons/io5'
 
 function ImagesUpload({ setImages }) {
     const [selectedFileList, setSelectedFileList] = useState([]);
@@ -70,21 +70,55 @@ function ImagesUpload({ setImages }) {
         }
     }
 
+    const onSetAsCover = (indexToCover) => {
+        if (indexToCover === 0) return;
+        const updatedList = [...selectedFileList];
+        const targetImage = updatedList[indexToCover];
+        // Move image to position 0
+        updatedList.splice(indexToCover, 1);
+        updatedList.unshift(targetImage);
+        
+        setSelectedFileList(updatedList);
+        if (setImages) {
+            setImages(updatedList);
+        }
+    }
+
     return (
         <div>
             <Separator className="my-5 bg-gray-200 w-full mx-auto h-0.5" />
             <h2 className='font-bold text-2xl mb-3 mt-4'>Upload Car Images</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                 {selectedFileList.map((image, index)=>(
-                    <div key={index} className='relative group'>
+                    <div key={index} className={`relative group rounded-xl overflow-hidden border-2 transition-all duration-300 ${index === 0 ? 'border-teal-500 shadow-md ring-2 ring-teal-500/20' : 'border-slate-200'}`}>
+                        {/* Remove Button */}
                         <button
                             type="button"
                             onClick={() => onRemoveImage(index)}
-                            className='absolute top-2 right-2 bg-white/90 hover:bg-red-500 hover:text-white text-gray-700 p-1.5 rounded-full cursor-pointer transition-all duration-200 shadow-md hover:scale-110 flex items-center justify-center z-10'
+                            className='absolute top-2 right-2 bg-white/90 hover:bg-red-500 hover:text-white text-gray-700 p-1.5 rounded-full cursor-pointer transition-all duration-200 shadow-md hover:scale-110 flex items-center justify-center z-25'
                         >
                             <IoClose className='w-4 h-4' />
                         </button>
-                        <img src={image} className="rounded-xl h-32 w-full object-cover" alt="Car preview" />
+                        
+                        {/* Cover Badge / Cover Selector */}
+                        {index === 0 ? (
+                            <div className='absolute bottom-2 left-2 bg-teal-600/90 text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-md border border-white/20 z-20'>
+                                <IoStar className='w-3 h-3 text-yellow-300 fill-yellow-300' />
+                                <span>Cover</span>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => onSetAsCover(index)}
+                                className='absolute bottom-2 left-2 bg-black/75 hover:bg-teal-600 text-white text-[10px] font-bold px-2.5 py-1 rounded flex items-center gap-1 cursor-pointer transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-md z-20 border border-white/10 hover:border-teal-500/20 hover:scale-105'
+                            >
+                                <IoStar className='w-3 h-3 text-slate-300' />
+                                <span>Set as Cover</span>
+                            </button>
+                        )}
+
+                        {/* Image preview */}
+                        <img src={image} className="h-32 w-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Car preview" />
                     </div>
                 ))}
                 <label htmlFor="upload-images" className={uploading ? "pointer-events-none opacity-60" : ""}>
