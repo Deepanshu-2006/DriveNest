@@ -1,4 +1,5 @@
 "use client";
+
 import Header from "./_components/Header";
 import Hero from "./_components/Hero";
 import Category from "./_components/Category";
@@ -8,13 +9,13 @@ import Footer from "./_components/Footer";
 
 export default function Home() {
   return (
-    <div>
+    <div className="bg-slate-50 min-h-screen text-slate-900">
       <Header />
       <Hero />
       <Category />
       <MostSearchedCar />
       <InfoSection />
       <Footer />
-      </div>
+    </div>
   );
 }
