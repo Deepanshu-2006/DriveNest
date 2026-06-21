@@ -81,6 +81,10 @@ function AntigravityCanvas({ onScrollProgress }) {
     ctx.resetTransform();
     ctx.scale(dpr, dpr);
 
+    // Enable high-quality image smoothing for crisp upscaled rendering
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
     // Fill with exactly #050505 background to blend with void
     ctx.fillStyle = '#050505';
     ctx.fillRect(0, 0, rect.width, rect.height);
