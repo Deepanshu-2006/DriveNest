@@ -35,6 +35,13 @@ function Hero() {
     const beatDOpacity = useTransform(scrollProgress, [0.75, 0.77, 1.0, 1.0], [0, 1, 1, 1]);
     const beatDY = useTransform(scrollProgress, [0.75, 0.77, 1.0, 1.0], [20, 0, 0, 0]);
 
+    const searchBarVisibility = useTransform(scrollProgress, (value) => {
+        return value >= 0.75 ? "visible" : "hidden";
+    });
+    const searchBarPointerEvents = useTransform(scrollProgress, (value) => {
+        return value >= 0.75 ? "auto" : "none";
+    });
+
     if (!isLoaded) {
         // Elegant shimmer placeholder to prevent layout shifts during auth evaluation
         return (
@@ -183,8 +190,13 @@ function Hero() {
 
                     {/* Beat D: SearchBar CTA (Bottom Aligned) */}
                     <motion.div
-                        style={{ opacity: beatDOpacity, y: beatDY }}
-                        className="absolute bottom-8 md:bottom-12 w-full max-w-5xl px-6 flex justify-center pointer-events-auto"
+                        style={{ 
+                            opacity: beatDOpacity, 
+                            y: beatDY,
+                            visibility: searchBarVisibility,
+                            pointerEvents: searchBarPointerEvents
+                        }}
+                        className="absolute bottom-8 md:bottom-12 w-full max-w-5xl px-6 flex justify-center"
                     >
                         <div className="w-full">
                             <SearchBar />

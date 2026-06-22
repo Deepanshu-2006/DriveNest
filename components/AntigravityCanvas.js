@@ -8,6 +8,7 @@ function AntigravityCanvas({ onScrollProgress }) {
   const canvasRef = useRef(null);
   const imagesRef = useRef([]);
   const currentFrameRef = useRef(0);
+  const dimensionsRef = useRef({ width: 0, height: 0, dpr: 1 });
   
   const [loading, setLoading] = useState(true);
   const [loadedCount, setLoadedCount] = useState(0);
@@ -18,10 +19,10 @@ function AntigravityCanvas({ onScrollProgress }) {
     offset: ["start start", "end end"]
   });
 
-  // Smooth scroll progress to eliminate jitter
+  // Smooth scroll progress to eliminate jitter and add a premium feel
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
+    stiffness: 60,
+    damping: 25,
     restDelta: 0.001
   });
 
@@ -60,7 +61,7 @@ function AntigravityCanvas({ onScrollProgress }) {
     imagesRef.current = loadedImages;
   }, []);
 
-  // Helper to draw a specific frame
+  // Helper to draw a specific frame - now runs at 60fps+ with no layout thrashing
   const drawFrame = (index) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -70,13 +71,8 @@ function AntigravityCanvas({ onScrollProgress }) {
     const img = imagesRef.current[index];
     if (!img || !img.complete) return;
 
-    const rect = canvas.parentNode.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    canvas.style.width = `${rect.width}px`;
-    canvas.style.height = `${rect.height}px`;
+    const { width, height, dpr } = dimensionsRef.current;
+    if (width === 0 || height === 0) return;
 
     ctx.resetTransform();
     ctx.scale(dpr, dpr);
@@ -87,46 +83,65 @@ function AntigravityCanvas({ onScrollProgress }) {
 
     // Fill with exactly #050505 background to blend with void
     ctx.fillStyle = '#050505';
-    ctx.fillRect(0, 0, rect.width, rect.height);
+    ctx.fillRect(0, 0, width, height);
 
     // Contain logic (preserve aspect ratio)
     const imgWidth = img.naturalWidth;
     const imgHeight = img.naturalHeight;
     if (!imgWidth || !imgHeight) return;
 
-    const canvasWidth = rect.width;
-    const canvasHeight = rect.height;
-
     const imgRatio = imgWidth / imgHeight;
-    const canvasRatio = canvasWidth / canvasHeight;
+    const canvasRatio = width / height;
 
-    let drawWidth = canvasWidth;
-    let drawHeight = canvasHeight;
+    let drawWidth = width;
+    let drawHeight = height;
     let offsetX = 0;
     let offsetY = 0;
 
     if (imgRatio > canvasRatio) {
-      drawWidth = canvasWidth;
-      drawHeight = canvasWidth / imgRatio;
-      offsetY = (canvasHeight - drawHeight) / 2;
+      drawWidth = width;
+      drawHeight = width / imgRatio;
+      offsetY = (height - drawHeight) / 2;
     } else {
-      drawHeight = canvasHeight;
-      drawWidth = canvasHeight * imgRatio;
-      offsetX = (canvasWidth - drawWidth) / 2;
+      drawHeight = height;
+      drawWidth = height * imgRatio;
+      offsetX = (width - drawWidth) / 2;
     }
 
     ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
     currentFrameRef.current = index;
   };
 
-  // Resize listener
+  // Observe container size using ResizeObserver to avoid Layout Thrashing on scroll
   useEffect(() => {
-    const handleResize = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const parent = canvas.parentNode;
+    if (!parent) return;
+
+    const handleResize = (entries) => {
+      if (entries.length === 0) return;
+      const entry = entries[0];
+      const { width, height } = entry.contentRect;
+      const dpr = window.devicePixelRatio || 1;
+
+      dimensionsRef.current = { width, height, dpr };
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      // Redraw immediately on resize
       drawFrame(currentFrameRef.current);
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(parent);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, []);
 
   // Trigger draw on frameIndex updates
