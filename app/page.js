@@ -13,21 +13,13 @@ export default function Home() {
   const isDarkHome = isLoaded && isSignedIn;
 
   return (
-    <div className={`dark bg-[#050505] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] text-white transition-all duration-500 ${isDarkHome ? 'min-h-screen' : 'h-screen overflow-hidden flex flex-col'}`}>
+    <div className={isDarkHome ? "dark bg-[#050505] min-h-screen text-white transition-all duration-500" : "bg-slate-50 min-h-screen text-slate-900 transition-all duration-500"}>
       <Header />
-      {isDarkHome ? (
-        <>
-          <Hero />
-          <Category />
-          <MostSearchedCar />
-          <InfoSection />
-          <Footer />
-        </>
-      ) : (
-        <div className="flex-1 flex flex-col justify-center items-center overflow-hidden w-full relative">
-          <Hero />
-        </div>
-      )}
+      <Hero />
+      <Category />
+      <MostSearchedCar />
+      <InfoSection />
+      <Footer />
     </div>
   );
 }

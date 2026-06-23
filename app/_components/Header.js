@@ -10,7 +10,7 @@ function Header() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
 
-    const isDarkHome = pathname === '/' || ((pathname === '/add-listing' || pathname === '/profile') && isSignedIn);
+    const isDarkHome = (pathname === '/' || pathname === '/add-listing' || pathname === '/profile') && isSignedIn;
 
     return (
         <header className={isDarkHome ? "bg-black/60 border-b border-white/10 sticky top-0 z-50 shadow-xs text-white backdrop-blur-md transition-all duration-300" : "bg-white border-b border-gray-100 sticky top-0 z-50 shadow-xs transition-all duration-300"}>
@@ -29,24 +29,22 @@ function Header() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    {isSignedIn && (
-                        <nav aria-label="Global" className={`hidden md:flex items-center gap-8 font-semibold text-[16px] ${isDarkHome ? 'text-white/85' : 'text-gray-600'}`}>
-                            <ul className="flex items-center gap-8">
-                                <li>
-                                    <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/"> Home </Link>
-                                </li>
-                                <li>
-                                    <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/search"> Search </Link>
-                                </li>
-                                <li>
-                                    <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/add-listing"> New </Link>
-                                </li>
-                                <li>
-                                    <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/search?condition=preowned"> Preowned </Link>
-                                </li>
-                            </ul>
-                        </nav>
-                    )}
+                    <nav aria-label="Global" className={`hidden md:flex items-center gap-8 font-semibold text-[16px] ${isDarkHome ? 'text-white/85' : 'text-gray-600'}`}>
+                        <ul className="flex items-center gap-8">
+                            <li>
+                                <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/"> Home </Link>
+                            </li>
+                            <li>
+                                <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/search"> Search </Link>
+                            </li>
+                            <li>
+                                <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/add-listing"> New </Link>
+                            </li>
+                            <li>
+                                <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/search?condition=preowned"> Preowned </Link>
+                            </li>
+                        </ul>
+                    </nav>
 
                     {/* Right action buttons */}
                     <div className="hidden md:flex items-center gap-4">
@@ -70,33 +68,22 @@ function Header() {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button / Action */}
+                    {/* Mobile Menu Button */}
                     <div className="flex items-center md:hidden gap-4">
-                        {isSignedIn ? (
-                            <>
-                                <UserButton afterSignOutUrl="/" />
-                                <button
-                                    onClick={() => setIsOpen(!isOpen)}
-                                    className={`p-2 transition focus:outline-none ${isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600'}`}
-                                    aria-expanded={isOpen}
-                                >
-                                    {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                                </button>
-                            </>
-                        ) : (
-                            <Link
-                                className="block rounded-full bg-teal-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-teal-700 shadow-sm"
-                                href="/sign-in"
-                            >
-                                Get Started
-                            </Link>
-                        )}
+                        {isSignedIn && <UserButton afterSignOutUrl="/" />}
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className={`p-2 transition focus:outline-none ${isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600'}`}
+                            aria-expanded={isOpen}
+                        >
+                            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                        </button>
                     </div>
                 </div>
             </div>
 
             {/* Mobile Menu Drawer */}
-            {isOpen && isSignedIn && (
+            {isOpen && (
                 <div className={`md:hidden border-t px-4 py-4 space-y-3 shadow-inner animate-in fade-in slide-in-from-top-2 duration-200 ${isDarkHome ? 'border-white/10 bg-black/95' : 'border-gray-100 bg-white'}`}>
                     <nav className="flex flex-col gap-3 font-medium text-[16px]">
                         <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50'}`} href="/"> Home </Link>
@@ -104,15 +91,28 @@ function Header() {
                         <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50'}`} href="/add-listing"> New </Link>
                         <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50'}`} href="/search?condition=preowned"> Preowned </Link>
                     </nav>
-                    <div className={`pt-2 border-t ${isDarkHome ? 'border-white/10' : 'border-gray-100'}`}>
-                        <Link
-                            onClick={() => setIsOpen(false)}
-                            className="block text-center rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 shadow-sm"
-                            href="/profile"
-                        >
-                            Submit Listing
-                        </Link>
-                    </div>
+                    {!isSignedIn && (
+                        <div className="pt-2 border-t border-gray-100">
+                            <Link
+                                onClick={() => setIsOpen(false)}
+                                className="block text-center rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 shadow-sm"
+                                href="/sign-in"
+                            >
+                                Get Started
+                            </Link>
+                        </div>
+                    )}
+                    {isSignedIn && (
+                        <div className={`pt-2 border-t ${isDarkHome ? 'border-white/10' : 'border-gray-100'}`}>
+                            <Link
+                                onClick={() => setIsOpen(false)}
+                                className="block text-center rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 shadow-sm"
+                                href="/profile"
+                            >
+                                Submit Listing
+                            </Link>
+                        </div>
+                    )}
                 </div>
             )}
         </header>
