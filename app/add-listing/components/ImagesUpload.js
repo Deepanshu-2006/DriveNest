@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import { Separator } from "@/components/ui/separator"
 import { IoClose, IoStar } from 'react-icons/io5'
+import { useUser } from '@clerk/nextjs'
 
 function ImagesUpload({ setImages }) {
     const [selectedFileList, setSelectedFileList] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const { isSignedIn } = useUser();
+    const isDark = isSignedIn;
     
     const onFileSelected = async (event)=>{
         const files = event.target.files;
@@ -58,10 +61,8 @@ function ImagesUpload({ setImages }) {
             const uploadedUrls = await Promise.all(uploadPromises);
             setSelectedFileList(prev => {
                 const updatedList = [...prev, ...uploadedUrls];
-                // Return updated list, do NOT call setImages here
                 return updatedList;
             });
-            // Update parent state outside the updater callback
             if (setImages) {
                 setImages([...selectedFileList, ...uploadedUrls]);
             }
@@ -97,14 +98,14 @@ function ImagesUpload({ setImages }) {
 
     return (
         <div>
-            <Separator className="my-5 bg-gray-200 w-full mx-auto h-0.5" />
+            <Separator className={`my-5 w-full mx-auto h-[1px] ${isDark ? 'bg-white/10' : 'bg-gray-200'}`} />
             <h2 className='font-bold text-2xl mb-3 mt-4 flex items-center gap-1.5'>
                 <span>Upload Car Images</span>
                 <span className='text-red-600 font-extrabold'>*</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                 {selectedFileList.map((image, index)=>(
-                    <div key={index} className={`relative group rounded-xl overflow-hidden border-2 transition-all duration-300 ${index === 0 ? 'border-teal-500 shadow-md ring-2 ring-teal-500/20' : 'border-slate-200'}`}>
+                    <div key={index} className={`relative group rounded-xl overflow-hidden border-2 transition-all duration-300 ${index === 0 ? 'border-teal-500 shadow-md ring-2 ring-teal-500/20' : isDark ? 'border-white/10' : 'border-slate-200'}`}>
                         {/* Remove Button */}
                         <button
                             type="button"
@@ -136,7 +137,7 @@ function ImagesUpload({ setImages }) {
                     </div>
                 ))}
                 <label htmlFor="upload-images" className={uploading ? "pointer-events-none opacity-60" : ""}>
-                    <div className='flex flex-col items-center justify-center cursor-pointer bg-teal-100 rounded-xl border-dotted border-3 border-teal-500 p-20 hover:shadow-lg hover:font-medium hover:scale-102 transition-all duration-200 h-32 w-full'>
+                    <div className={`flex flex-col items-center justify-center cursor-pointer rounded-xl border-dashed border-2 p-20 hover:scale-102 transition-all duration-200 h-32 w-full ${isDark ? 'bg-teal-950/15 border-teal-800 text-teal-400 hover:bg-teal-950/30' : 'bg-teal-50 border-teal-400 text-gray-500 hover:shadow-lg'}`}>
                         {uploading ? (
                             <div className="w-full max-w-40 flex flex-col items-center">
                                 <span className="text-teal-600 text-xs font-bold mb-2">
@@ -151,8 +152,8 @@ function ImagesUpload({ setImages }) {
                             </div>
                         ) : (
                             <>
-                                <h2 className='text-4xl text-gray-500' >+</h2>
-                                <h2 className='text-gray-500 text-center text-sm font-medium'>Upload Images</h2>
+                                <h2 className={`text-4xl ${isDark ? 'text-teal-400' : 'text-gray-500'}`} >+</h2>
+                                <h2 className={`text-center text-sm font-medium ${isDark ? 'text-teal-400/80' : 'text-gray-500'}`}>Upload Images</h2>
                             </>
                         )}
                     </div>

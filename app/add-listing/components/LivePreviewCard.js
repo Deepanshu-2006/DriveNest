@@ -7,12 +7,15 @@ import { Separator } from '@/components/ui/separator'
 import featuresData from '../../Shared/features.json'
 import carDetails from '../../Shared/carDetails.json'
 import { Eye, MapPin, Calendar, Car, Sparkles, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react'
+import { useUser } from '@clerk/nextjs'
 
 function LivePreviewCard({ formData = {}, user = null }) {
   const cardRef = useRef(null)
   const [rotate, setRotate] = useState({ x: 0, y: 0 })
   const [isHovered, setIsHovered] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const { isSignedIn } = useUser()
+  const isDark = isSignedIn
 
   // Extract variables
   const images = formData.images || []
@@ -114,12 +117,18 @@ function LivePreviewCard({ formData = {}, user = null }) {
   const getConditionBadgeStyle = (cond) => {
     const c = cond.toLowerCase().trim()
     if (c === 'new') {
-      return 'bg-emerald-50/95 text-emerald-700 border-emerald-200/60 shadow-sm'
+      return isDark 
+        ? 'bg-emerald-950/40 text-emerald-400 border-emerald-900/45 shadow-sm'
+        : 'bg-emerald-50/95 text-emerald-700 border-emerald-200/60 shadow-sm'
     }
     if (c === 'certified pre-owned') {
-      return 'bg-amber-50/95 text-amber-700 border-amber-200/60 shadow-sm'
+      return isDark
+        ? 'bg-amber-950/40 text-amber-400 border-amber-900/45 shadow-sm'
+        : 'bg-amber-50/95 text-amber-700 border-amber-200/60 shadow-sm'
     }
-    return 'bg-slate-50/95 text-slate-700 border-slate-200/60 shadow-sm'
+    return isDark
+      ? 'bg-white/5 text-white/80 border-white/10 shadow-sm'
+      : 'bg-slate-50/95 text-slate-700 border-slate-200/60 shadow-sm'
   }
 
   // Dynamic Color Swatch Mapping
@@ -148,7 +157,7 @@ function LivePreviewCard({ formData = {}, user = null }) {
   return (
     <div className="relative group w-full" style={{ perspective: '1000px' }}>
       {/* Background ambient glow effect */}
-      <div className="absolute -inset-1.5 bg-linear-to-r from-teal-500/30 to-emerald-500/30 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition duration-700"></div>
+      <div className={`absolute -inset-1.5 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition duration-700 ${isDark ? 'from-teal-500/15 to-emerald-500/15' : 'from-teal-500/30 to-emerald-500/30'}`}></div>
       
       {/* Card container */}
       <div 
@@ -162,7 +171,7 @@ function LivePreviewCard({ formData = {}, user = null }) {
             : 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
           transition: isHovered ? 'none' : 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)',
         }}
-        className="relative flex flex-col w-full bg-white/70 backdrop-blur-xl border border-white/40 shadow-2xl rounded-3xl overflow-hidden cursor-default transform-gpu"
+        className={`relative flex flex-col w-full backdrop-blur-xl shadow-2xl rounded-3xl overflow-hidden cursor-default transform-gpu transition-all duration-500 ${isDark ? 'bg-black/50 border-white/10 border text-white' : 'bg-white/70 border border-white/40 text-slate-900'}`}
       >
         {/* Dynamic Discount Deal Badge (placed at top-left) */}
         {discountPercentage > 0 && (
@@ -173,12 +182,12 @@ function LivePreviewCard({ formData = {}, user = null }) {
         )}
 
         {/* Dynamic Light Condition Badge (placed at top-right) */}
-        <div className={`absolute top-4 right-4 z-20 text-[10px] uppercase tracking-wider font-extrabold px-3 py-1.5 rounded-full backdrop-blur-sm transition-all duration-300 ${getConditionBadgeStyle(condition)}`}>
+        <div className={`absolute top-4 right-4 z-20 text-[10px] uppercase tracking-wider font-extrabold px-3 py-1.5 rounded-full backdrop-blur-sm transition-all duration-300 border ${getConditionBadgeStyle(condition)}`}>
           {condition}
         </div>
 
         {/* Media / Image Display Area */}
-        <div className="relative w-full h-56 bg-slate-950 overflow-hidden flex items-center justify-center group/carousel">
+        <div className="relative w-full h-56 bg-slate-950 overflow-hidden flex items-center justify-center group/carousel border-b border-white/5">
           {hasImages ? (
             <>
               <img 
@@ -237,71 +246,71 @@ function LivePreviewCard({ formData = {}, user = null }) {
         <div className="p-6">
           {/* Make / Model / Year / Category Tags */}
           <div className="flex flex-wrap gap-1.5 mb-3">
-            <span className={`flex items-center gap-1 text-[9px] uppercase font-bold tracking-wider px-2 py-1 rounded-md border transition-all duration-300 ${hasYear ? 'bg-slate-100 text-slate-700 border-slate-200/50' : 'bg-slate-50/50 text-slate-400/70 border-dashed border-slate-200'}`}>
+            <span className={`flex items-center gap-1 text-[9px] uppercase font-bold tracking-wider px-2 py-1 rounded-md border transition-all duration-300 ${hasYear ? (isDark ? 'bg-white/5 text-white/80 border-white/10' : 'bg-slate-100 text-slate-700 border-slate-200/50') : (isDark ? 'bg-white/5 text-white/40 border-dashed border-white/10' : 'bg-slate-50/50 text-slate-400/70 border-dashed border-slate-200')}`}>
               <Calendar className="w-2.5 h-2.5 text-slate-500" />
               {year}
             </span>
             
-            <span className={`flex items-center gap-1 text-[9px] uppercase font-bold tracking-wider px-2 py-1 rounded-md border transition-all duration-300 ${hasCategory ? 'bg-slate-100 text-slate-700 border-slate-200/50' : 'bg-slate-50/50 text-slate-400/70 border-dashed border-slate-200'}`}>
+            <span className={`flex items-center gap-1 text-[9px] uppercase font-bold tracking-wider px-2 py-1 rounded-md border transition-all duration-300 ${hasCategory ? (isDark ? 'bg-white/5 text-white/80 border-white/10' : 'bg-slate-100 text-slate-700 border-slate-200/50') : (isDark ? 'bg-white/5 text-white/40 border-dashed border-white/10' : 'bg-slate-50/50 text-slate-400/70 border-dashed border-slate-200')}`}>
               <Car className="w-2.5 h-2.5 text-slate-500" />
               {category}
             </span>
 
             {/* Dynamic Swatch tag */}
-            <span className="flex items-center gap-1.5 text-[9px] uppercase font-bold tracking-wider bg-slate-100/80 text-slate-700 px-2 py-1 rounded-md border border-slate-200/50 transition-all duration-300">
+            <span className={`flex items-center gap-1.5 text-[9px] uppercase font-bold tracking-wider px-2 py-1 rounded-md border transition-all duration-300 ${isDark ? 'bg-white/5 text-white/80 border-white/10' : 'bg-slate-100/80 text-slate-700 border-slate-200/50'}`}>
               <span className={`w-2.5 h-2.5 rounded-full border shadow-sm transition-all duration-300 ${swatchClass}`} />
-              <span className={formData.color ? 'text-slate-700' : 'text-slate-400/70 font-normal italic'}>
+              <span className={formData.color ? (isDark ? 'text-white/80' : 'text-slate-700') : (isDark ? 'text-white/40 font-normal italic' : 'text-slate-400/70 font-normal italic')}>
                 {displayColorName}
               </span>
             </span>
             
-            <span className={`flex items-center gap-1 text-[9px] uppercase font-bold tracking-wider px-2 py-1 rounded-md border transition-all duration-300 ${(hasMake || hasModel) ? 'bg-teal-50 text-teal-800 border-teal-100' : 'bg-slate-50/50 text-slate-400/70 border-dashed border-slate-200'}`}>
+            <span className={`flex items-center gap-1 text-[9px] uppercase font-bold tracking-wider px-2 py-1 rounded-md border transition-all duration-300 ${(hasMake || hasModel) ? (isDark ? 'bg-teal-950/30 text-teal-300 border-teal-850/30' : 'bg-teal-50 text-teal-800 border-teal-100') : (isDark ? 'bg-white/5 text-white/40 border-dashed border-white/10' : 'bg-slate-50/50 text-slate-400/70 border-dashed border-slate-200')}`}>
               {make} {model}
             </span>
           </div>
 
           {/* Listing Title */}
-          <h2 className={`font-extrabold text-xl line-clamp-1 mb-1 transition-all duration-300 ${hasTitle ? 'text-slate-900' : 'text-slate-400/80 font-semibold italic'}`}>
+          <h2 className={`font-extrabold text-xl line-clamp-1 mb-1 transition-all duration-300 ${hasTitle ? (isDark ? 'text-white' : 'text-slate-900') : 'text-slate-400/80 font-semibold italic'}`}>
             {title}
           </h2>
 
           {/* Tagline */}
-          <p className="text-slate-500 text-xs font-semibold line-clamp-1 italic">
+          <p className={`text-xs font-semibold line-clamp-1 italic ${isDark ? 'text-white/60' : 'text-slate-505'}`}>
             {tagline}
           </p>
 
           {/* Description Snippet Preview */}
-          <p className={`text-xs mt-2 line-clamp-2 leading-relaxed transition-all duration-300 ${hasDescription ? 'text-slate-600' : 'text-slate-400/70 italic'}`}>
+          <p className={`text-xs mt-2 line-clamp-2 leading-relaxed transition-all duration-300 ${hasDescription ? (isDark ? 'text-white/70' : 'text-slate-600') : 'text-slate-400/70 italic'}`}>
             {description}
           </p>
 
-          <Separator className="bg-slate-200/80 h-px my-4" />
+          <Separator className={`h-px my-4 ${isDark ? 'bg-white/10' : 'bg-slate-200/80'}`} />
 
           {/* Specs grid matching CarItem styling */}
           <div className="grid grid-cols-3 gap-2 mt-4 text-center">
             {/* Fuel Box */}
-            <div className="flex flex-col items-center p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100/50 transition-colors duration-200">
-              <Image src={fuel} width={20} height={20} className="object-contain mb-1" alt="Fuel Type" />
-              <h4 className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Fuel</h4>
-              <h3 className={`text-xs font-extrabold mt-0.5 line-clamp-1 transition-all duration-300 ${hasFuelType ? 'text-slate-800' : 'text-slate-400/70 font-normal italic'}`}>
+            <div className={`flex flex-col items-center p-2 rounded-xl border transition-colors duration-200 ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-slate-50 border-slate-100 hover:bg-slate-100/50'}`}>
+              <Image src={fuel} width={20} height={20} className={`object-contain mb-1 ${isDark ? 'invert' : ''}`} alt="Fuel Type" />
+              <h4 className={`text-[9px] font-bold uppercase tracking-wider ${isDark ? 'text-white/40' : 'text-slate-400'}`}>Fuel</h4>
+              <h3 className={`text-xs font-extrabold mt-0.5 line-clamp-1 transition-all duration-300 ${hasFuelType ? (isDark ? 'text-white' : 'text-slate-800') : 'text-slate-400/70 font-normal italic'}`}>
                 {fuelType}
               </h3>
             </div>
             
             {/* Gearbox Box */}
-            <div className="flex flex-col items-center p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100/50 transition-colors duration-200">
-              <Image src={gearshift} width={20} height={20} className="object-contain mb-1" alt="Transmission" />
-              <h4 className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Gearbox</h4>
-              <h3 className={`text-xs font-extrabold mt-0.5 line-clamp-1 transition-all duration-300 ${hasTransmission ? 'text-slate-800' : 'text-slate-400/70 font-normal italic'}`}>
+            <div className={`flex flex-col items-center p-2 rounded-xl border transition-colors duration-200 ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-slate-50 border-slate-100 hover:bg-slate-100/50'}`}>
+              <Image src={gearshift} width={20} height={20} className={`object-contain mb-1 ${isDark ? 'invert' : ''}`} alt="Transmission" />
+              <h4 className={`text-[9px] font-bold uppercase tracking-wider ${isDark ? 'text-white/40' : 'text-slate-400'}`}>Gearbox</h4>
+              <h3 className={`text-xs font-extrabold mt-0.5 line-clamp-1 transition-all duration-300 ${hasTransmission ? (isDark ? 'text-white' : 'text-slate-800') : 'text-slate-400/70 font-normal italic'}`}>
                 {transmission}
               </h3>
             </div>
             
             {/* Mileage Box */}
-            <div className="flex flex-col items-center p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100/50 transition-colors duration-200">
-              <Image src={speedometer} width={20} height={20} className="object-contain mb-1" alt="Mileage" />
-              <h4 className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Mileage</h4>
-              <h3 className={`text-xs font-extrabold mt-0.5 line-clamp-1 transition-all duration-300 ${hasMileage ? 'text-slate-800' : 'text-slate-400/70 font-normal italic'}`}>
+            <div className={`flex flex-col items-center p-2 rounded-xl border transition-colors duration-200 ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-slate-50 border-slate-100 hover:bg-slate-100/50'}`}>
+              <Image src={speedometer} width={20} height={20} className={`object-contain mb-1 ${isDark ? 'invert' : ''}`} alt="Mileage" />
+              <h4 className={`text-[9px] font-bold uppercase tracking-wider ${isDark ? 'text-white/40' : 'text-slate-400'}`}>Mileage</h4>
+              <h3 className={`text-xs font-extrabold mt-0.5 line-clamp-1 transition-all duration-300 ${hasMileage ? (isDark ? 'text-white' : 'text-slate-800') : 'text-slate-400/70 font-normal italic'}`}>
                 {mileage}
               </h3>
             </div>
@@ -310,19 +319,19 @@ function LivePreviewCard({ formData = {}, user = null }) {
           {/* Features List Container */}
           {selectedFeatures.length > 0 && (
             <>
-              <Separator className="bg-slate-200/80 h-px my-4" />
+              <Separator className={`h-px my-4 ${isDark ? 'bg-white/10' : 'bg-slate-200/80'}`} />
               <div>
-                <h4 className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2 flex items-center gap-1">
+                <h4 className={`text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1 ${isDark ? 'text-white/40' : 'text-slate-400'}`}>
                   <Sparkles className="w-3 h-3 text-teal-500" /> Features Selected ({selectedFeatures.length})
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
                   {selectedFeatures.slice(0, 3).map((f, i) => (
-                    <span key={i} className="text-[10px] font-semibold bg-teal-50/80 text-teal-700 px-2.5 py-0.5 rounded-full border border-teal-100">
+                    <span key={i} className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${isDark ? 'bg-teal-950/30 text-teal-300 border-teal-800/30' : 'bg-teal-50/80 text-teal-700 border-teal-100'}`}>
                       {f.label}
                     </span>
                   ))}
                   {selectedFeatures.length > 3 && (
-                    <span className="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDark ? 'bg-white/5 text-white/60' : 'bg-slate-100 text-slate-600'}`}>
                       +{selectedFeatures.length - 3} more
                     </span>
                   )}
@@ -331,27 +340,27 @@ function LivePreviewCard({ formData = {}, user = null }) {
             </>
           )}
 
-          <Separator className="bg-slate-200/80 h-px my-4" />
+          <Separator className={`h-px my-4 ${isDark ? 'bg-white/10' : 'bg-slate-200/80'}`} />
 
           {/* Footer containing Price info */}
           <div className="flex items-center justify-between mt-4 mb-5">
             <div className="flex flex-col">
               {originalPrice && (
-                <span className="text-sm text-slate-400 line-through font-semibold leading-none">
+                <span className={`text-sm line-through font-semibold leading-none ${isDark ? 'text-white/40' : 'text-slate-400'}`}>
                   ${originalPrice}
                 </span>
               )}
-              <h2 className={`font-extrabold text-2xl leading-none mt-1 transition-all duration-300 ${hasSellingPrice ? 'text-teal-600' : 'text-slate-400/80 font-bold italic text-md'}`}>
+              <h2 className={`font-extrabold text-2xl leading-none mt-1 transition-all duration-300 ${hasSellingPrice ? (isDark ? 'text-teal-400' : 'text-teal-600') : 'text-slate-400/80 font-bold italic text-md'}`}>
                 ${sellingPrice}
               </h2>
             </div>
             {isReadyToPost ? (
-              <div className="flex items-center gap-1 text-emerald-600 text-xs bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 font-bold shadow-sm shadow-emerald-500/5 transition-all duration-300">
+              <div className={`flex items-center gap-1 text-xs px-2 py-1 rounded-md border font-bold shadow-sm transition-all duration-300 ${isDark ? 'text-emerald-400 bg-emerald-950/20 border-emerald-900/30 shadow-emerald-500/2' : 'text-emerald-600 bg-emerald-50 border-emerald-100 shadow-emerald-500/5'}`}>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span>Ready to post</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1 text-rose-500 text-xs bg-rose-50 px-2 py-1 rounded-md border border-rose-100 font-bold transition-all duration-300 mt-3">
+              <div className={`flex items-center gap-1 text-xs px-2 py-1 rounded-md border font-bold transition-all duration-300 mt-3 ${isDark ? 'text-rose-400 bg-rose-950/20 border-rose-900/30' : 'text-rose-500 bg-rose-50 border-rose-100'}`}>
                 <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
                 <span>Can't Post</span>
               </div>

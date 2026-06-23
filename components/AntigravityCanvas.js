@@ -8,7 +8,7 @@ function AntigravityCanvas({ onScrollProgress }) {
   const canvasRef = useRef(null);
   const imagesRef = useRef([]);
   const currentFrameRef = useRef(0);
-  const dimensionsRef = useRef({ width: 0, height: 0, dpr: 1 });
+
   
   const [loading, setLoading] = useState(true);
   const [loadedCount, setLoadedCount] = useState(0);
@@ -26,18 +26,19 @@ function AntigravityCanvas({ onScrollProgress }) {
     restDelta: 0.001
   });
 
-  // Map progress (0.0 to 1.0) to frame index (0 to 119)
-  const frameIndex = useTransform(smoothProgress, [0, 1], [0, 119]);
+  // Map progress (0.0 to 1.0) to frame index (0 to 180)
+  const frameIndex = useTransform(smoothProgress, [0, 1], [0, 180]);
 
-  // Preload all 120 images on mount
+  // Preload all 181 images on mount
   useEffect(() => {
-    const totalFrames = 120;
+    const totalFrames = 181;
     const loadedImages = [];
     let completed = 0;
 
-    for (let i = 0; i < totalFrames; i++) {
+    for (let i = 1; i <= totalFrames; i++) {
       const img = new Image();
-      img.src = `/sequence/frame_${i}.webp`;
+      const frameNum = String(i).padStart(4, '0');
+      img.src = `/sequence/${frameNum}.webp`;
       
       img.onload = () => {
         completed++;
@@ -48,7 +49,7 @@ function AntigravityCanvas({ onScrollProgress }) {
       };
 
       img.onerror = () => {
-        console.error(`Failed to load image frame_${i}.webp`);
+        console.error(`Failed to load image ${frameNum}.webp`);
         completed++;
         setLoadedCount(completed);
         if (completed === totalFrames) {
@@ -61,7 +62,7 @@ function AntigravityCanvas({ onScrollProgress }) {
     imagesRef.current = loadedImages;
   }, []);
 
-  // Helper to draw a specific frame - now runs at 60fps+ with no layout thrashing
+  // Helper to draw a specific frame - draws 1:1 pixels to prevent double-scaling blur
   const drawFrame = (index) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -71,78 +72,25 @@ function AntigravityCanvas({ onScrollProgress }) {
     const img = imagesRef.current[index];
     if (!img || !img.complete) return;
 
-    const { width, height, dpr } = dimensionsRef.current;
-    if (width === 0 || height === 0) return;
+    const imgWidth = img.naturalWidth || 1280;
+    const imgHeight = img.naturalHeight || 720;
 
-    ctx.resetTransform();
-    ctx.scale(dpr, dpr);
+    // Adjust canvas dimensions to match the image dimensions exactly
+    if (canvas.width !== imgWidth || canvas.height !== imgHeight) {
+      canvas.width = imgWidth;
+      canvas.height = imgHeight;
+    }
 
-    // Enable high-quality image smoothing for crisp upscaled rendering
+    // Enable high-quality image smoothing
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // Fill with exactly #050505 background to blend with void
-    ctx.fillStyle = '#050505';
-    ctx.fillRect(0, 0, width, height);
-
-    // Contain logic (preserve aspect ratio)
-    const imgWidth = img.naturalWidth;
-    const imgHeight = img.naturalHeight;
-    if (!imgWidth || !imgHeight) return;
-
-    const imgRatio = imgWidth / imgHeight;
-    const canvasRatio = width / height;
-
-    let drawWidth = width;
-    let drawHeight = height;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    if (imgRatio > canvasRatio) {
-      drawWidth = width;
-      drawHeight = width / imgRatio;
-      offsetY = (height - drawHeight) / 2;
-    } else {
-      drawHeight = height;
-      drawWidth = height * imgRatio;
-      offsetX = (width - drawWidth) / 2;
-    }
-
-    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    // Clear and draw at 1:1 pixel size
+    ctx.clearRect(0, 0, imgWidth, imgHeight);
+    ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+    
     currentFrameRef.current = index;
   };
-
-  // Observe container size using ResizeObserver to avoid Layout Thrashing on scroll
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const parent = canvas.parentNode;
-    if (!parent) return;
-
-    const handleResize = (entries) => {
-      if (entries.length === 0) return;
-      const entry = entries[0];
-      const { width, height } = entry.contentRect;
-      const dpr = window.devicePixelRatio || 1;
-
-      dimensionsRef.current = { width, height, dpr };
-
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-
-      // Redraw immediately on resize
-      drawFrame(currentFrameRef.current);
-    };
-
-    const resizeObserver = new ResizeObserver(handleResize);
-    resizeObserver.observe(parent);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
 
   // Trigger draw on frameIndex updates
   useEffect(() => {
@@ -152,7 +100,7 @@ function AntigravityCanvas({ onScrollProgress }) {
     drawFrame(0);
 
     const unsubscribe = frameIndex.on("change", (latest) => {
-      const idx = Math.min(119, Math.max(0, Math.floor(latest)));
+      const idx = Math.min(180, Math.max(0, Math.floor(latest)));
       drawFrame(idx);
     });
 
@@ -169,7 +117,7 @@ function AntigravityCanvas({ onScrollProgress }) {
     return () => unsubscribeProgress();
   }, [smoothProgress, onScrollProgress]);
 
-  const progressPercent = Math.round((loadedCount / 120) * 100);
+  const progressPercent = Math.round((loadedCount / 181) * 100);
 
   return (
     <div ref={containerRef} className="relative w-full h-[400vh] bg-[#050505]">
@@ -205,8 +153,12 @@ function AntigravityCanvas({ onScrollProgress }) {
       )}
 
       {/* Sticky Canvas Container */}
-      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden flex items-center justify-center">
-        <canvas ref={canvasRef} className="block max-w-full max-h-full" />
+      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden flex items-center justify-center bg-[#050505]">
+        <canvas 
+          ref={canvasRef} 
+          className="block w-full h-full object-contain" 
+          style={{ imageRendering: '-webkit-optimize-contrast' }}
+        />
       </div>
     </div>
   );

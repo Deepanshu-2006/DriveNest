@@ -18,8 +18,9 @@ import { Eye } from 'lucide-react'
 function AddListing() {
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(false);
-    const { user } = useUser();
+    const { user, isSignedIn } = useUser();
     const router = useRouter();
+    const isDark = isSignedIn;
 
     const handleInputChange = (name, value) => {
         setFormData((prevData) => ({
@@ -87,19 +88,19 @@ function AddListing() {
     }) && !!(formData.images && formData.images.length > 0);
 
     return (
-        <div className="bg-slate-50 min-h-screen">
+        <div className={isDark ? "dark bg-[#050505] min-h-screen text-white transition-all duration-500" : "bg-slate-50 min-h-screen text-slate-900 transition-all duration-500"}>
             <Header />
             <div className='p-6 md:p-12 max-w-7xl mx-auto'>
-                <h2 className='text-4xl font-extrabold text-slate-900 tracking-tight'>Add New Listing</h2>
-                <p className='text-slate-500 mt-2 text-md'>Fill out the details to list your vehicle on DriveNest.</p>
+                <h2 className={`text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Add New Listing</h2>
+                <p className={`mt-2 text-md ${isDark ? 'text-white/60' : 'text-slate-500'}`}>Fill out the details to list your vehicle on DriveNest.</p>
                 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 items-start'>
                     {/* Form Container (2/3 width on desktop) */}
                     <div className='lg:col-span-2'>
-                        <form onSubmit={onSubmit} className='p-6 md:p-10 bg-white shadow-xl rounded-2xl border border-slate-200/80'>
+                        <form onSubmit={onSubmit} className={`p-6 md:p-10 shadow-2xl rounded-2xl border transition-all duration-300 ${isDark ? 'bg-[#0f0f0f] border-white/10 text-white' : 'bg-white border-slate-200/80'}`}>
                             {/* Car Details */}
                             <div>
-                                <h2 className='font-bold text-2xl text-slate-800 mb-6'>Car Details</h2>
+                                <h2 className={`font-bold text-2xl mb-6 ${isDark ? 'text-white' : 'text-slate-800'}`}>Car Details</h2>
                                 <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                                     {carDetails.carDetails.map((item, index) => (
                                         <div key={index} className={item.type === 'textarea' ? 'col-span-1 md:col-span-2' : ''}>
@@ -115,16 +116,16 @@ function AddListing() {
                                 </div>
                             </div>
                             
-                            <Separator className="my-8 bg-slate-200 h-px" />
+                            <Separator className={`my-8 h-px ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
 
                             {/* Features List */}
                             <div>
-                                <h2 className='font-bold text-2xl text-slate-800 mb-4'>Features</h2>
+                                <h2 className={`font-bold text-2xl mb-4 ${isDark ? 'text-white' : 'text-slate-800'}`}>Features</h2>
                                 <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2'>
                                     {features.features.map((item, index) => (
-                                        <div key={index} className='flex gap-3 items-center hover:bg-slate-50 p-2 rounded-lg transition-colors duration-150' >
+                                        <div key={index} className={`flex gap-3 items-center p-2 rounded-lg transition-colors duration-150 ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`} >
                                             <Checkbox onCheckedChange={(value) => handleInputChange(item.name, value)} />
-                                            <h2 className='text-sm font-medium text-slate-700'>{item.label}</h2>
+                                            <h2 className={`text-sm font-medium ${isDark ? 'text-white/80' : 'text-slate-700'}`}>{item.label}</h2>
                                         </div>
                                     ))}
                                 </div>
@@ -136,7 +137,7 @@ function AddListing() {
                             </div>
                             
                             {/* Submit Button */}
-                            <div className='border-t border-slate-100 pt-6 mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between'>
+                            <div className={`border-t pt-6 mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
                                 <div className="text-sm font-medium">
                                     {isFormValid ? (
                                         <p className="text-emerald-600 flex items-center gap-1.5 font-bold animate-fade-in">

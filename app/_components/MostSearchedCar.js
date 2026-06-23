@@ -8,14 +8,17 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
+import { useUser } from '@clerk/nextjs'
 
 
 function MostSearchedCar() {
-    console.log(FakeData.carList);
+    const { isSignedIn } = useUser();
+    const isDark = isSignedIn;
+
     return (
         <div className='px-10 md:px-20 mt-10 text-center'>
             <h2 className='text-4xl font-bold'>Most Searched Cars</h2>
-            <p className='text-gray-500 text-xl mt-2 mb-10'>Discover the most popular cars</p>
+            <p className={`text-xl mt-2 mb-10 ${isDark ? 'text-white/60' : 'text-gray-500'}`}>Discover the most popular cars</p>
             <Carousel className="cursor-pointer" opts={{ align: 'start' }}>
                 <CarouselContent>
                     {FakeData.carList.map((car, index) => (
