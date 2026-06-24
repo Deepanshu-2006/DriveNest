@@ -2,7 +2,7 @@ import React from 'react'
 import IconFiles from './IconField'
 import { useUser } from '@clerk/nextjs'
 
-function TextAreaField({ item, handleInputChange }) {
+function TextAreaField({ item, handleInputChange, value }) {
     const { isSignedIn } = useUser();
     const isDark = isSignedIn;
 
@@ -18,6 +18,7 @@ function TextAreaField({ item, handleInputChange }) {
             <textarea
                 name={item?.name}
                 required={item?.required}
+                value={value || ''}
                 onChange={(e) => handleInputChange(item.name, e.target.value)}
                 rows={4}
                 className={`w-full border rounded-lg p-2.5 outline-none focus:border-teal-500 text-sm mt-1 resize-none transition-colors duration-200 ${isDark ? 'bg-[#151515] border-white/10 text-white focus:bg-[#1c1c1c]' : 'bg-white border-gray-300 text-slate-900 focus:border-teal-600'}`}

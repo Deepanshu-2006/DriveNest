@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./_components/Header";
+import ToastProvider from "./_components/ToastProvider";
 import {
   ClerkProvider,
   UserButton,
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
           <main className="flex-1">
             {children}
           </main>
+          <ToastProvider />
         </ClerkProvider>
       </body>
     </html>

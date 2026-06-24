@@ -10,7 +10,7 @@ function Header() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
 
-    const isDarkHome = (pathname === '/' || pathname === '/add-listing' || pathname === '/profile') && isSignedIn;
+    const isDarkHome = (pathname === '/' || pathname === '/add-listing' || pathname === '/profile' || pathname.startsWith('/listing-details') || pathname.startsWith('/search')) && isSignedIn;
 
     return (
         <header className={isDarkHome ? "bg-black/60 border-b border-white/10 sticky top-0 z-50 shadow-xs text-white backdrop-blur-md transition-all duration-300" : "bg-white border-b border-gray-100 sticky top-0 z-50 shadow-xs transition-all duration-300"}>
@@ -32,17 +32,42 @@ function Header() {
                     <nav aria-label="Global" className={`hidden md:flex items-center gap-8 font-semibold text-[16px] ${isDarkHome ? 'text-white/85' : 'text-gray-600'}`}>
                         <ul className="flex items-center gap-8">
                             <li>
-                                <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/"> Home </Link>
+                                <Link className={`transition ${
+                                    pathname === '/' 
+                                        ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4') 
+                                        : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
+                                }`} href="/"> Home </Link>
                             </li>
                             <li>
-                                <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/search"> Search </Link>
+                                <Link className={`transition ${
+                                    pathname === '/search' 
+                                        ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4') 
+                                        : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
+                                }`} href="/search"> Search </Link>
                             </li>
                             <li>
-                                <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/add-listing"> New </Link>
+                                <Link className={`transition ${
+                                    pathname === '/add-listing' 
+                                        ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4') 
+                                        : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
+                                }`} href="/add-listing"> New </Link>
                             </li>
                             <li>
-                                <Link className={`transition ${isDarkHome ? 'hover:text-teal-400 text-white/80' : 'hover:text-teal-600 text-gray-600'}`} href="/search?condition=preowned"> Preowned </Link>
+                                <Link className={`transition ${
+                                    pathname === '/search?condition=preowned' 
+                                        ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4') 
+                                        : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
+                                }`} href="/search?condition=preowned"> Preowned </Link>
                             </li>
+                            {isSignedIn && (
+                                <li>
+                                    <Link className={`transition ${
+                                        pathname === '/profile' 
+                                            ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4') 
+                                            : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
+                                    }`} href="/profile"> Profile </Link>
+                                </li>
+                            )}
                         </ul>
                     </nav>
 
@@ -52,9 +77,9 @@ function Header() {
                             <div className="flex items-center gap-4">
                                 <Link
                                     className="block rounded-full bg-teal-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-teal-700  hover:font-extrabold hover:scale-105 transition-all shadow-sm"
-                                    href="/profile"
+                                    href={pathname === '/add-listing' ? '/profile' : '/add-listing'}
                                 >
-                                    Submit Listing
+                                    {pathname === '/add-listing' ? 'My Profile' : 'Submit Listing'}
                                 </Link>
                                 <UserButton afterSignOutUrl="/" />
                             </div>
@@ -86,10 +111,13 @@ function Header() {
             {isOpen && (
                 <div className={`md:hidden border-t px-4 py-4 space-y-3 shadow-inner animate-in fade-in slide-in-from-top-2 duration-200 ${isDarkHome ? 'border-white/10 bg-black/95' : 'border-gray-100 bg-white'}`}>
                     <nav className="flex flex-col gap-3 font-medium text-[16px]">
-                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50'}`} href="/"> Home </Link>
-                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50'}`} href="/search"> Search </Link>
-                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50'}`} href="/add-listing"> New </Link>
-                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50'}`} href="/search?condition=preowned"> Preowned </Link>
+                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/"> Home </Link>
+                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/search' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/search"> Search </Link>
+                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/add-listing' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/add-listing"> New </Link>
+                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/search?condition=preowned' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/search?condition=preowned"> Preowned </Link>
+                        {isSignedIn && (
+                            <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/profile' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile"> Profile </Link>
+                        )}
                     </nav>
                     {!isSignedIn && (
                         <div className="pt-2 border-t border-gray-100">
@@ -107,9 +135,9 @@ function Header() {
                             <Link
                                 onClick={() => setIsOpen(false)}
                                 className="block text-center rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 shadow-sm"
-                                href="/profile"
+                                href={pathname === '/add-listing' ? '/profile' : '/add-listing'}
                             >
-                                Submit Listing
+                                {pathname === '/add-listing' ? 'My Profile' : 'Submit Listing'}
                             </Link>
                         </div>
                     )}

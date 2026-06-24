@@ -2,7 +2,7 @@ import React from 'react'
 import IconFiles from './IconField'
 import { useUser } from '@clerk/nextjs'
 
-function InputField({ item, handleInputChange }) {
+function InputField({ item, handleInputChange, value }) {
     const { isSignedIn } = useUser();
     const isDark = isSignedIn;
 
@@ -19,6 +19,7 @@ function InputField({ item, handleInputChange }) {
                 type={item?.type}
                 name={item?.name}
                 required={item?.required}
+                value={value || ''}
                 onChange={(e) => handleInputChange(item.name, e.target.value)}
                 className={`w-full border rounded-lg p-2.5 outline-none focus:border-teal-500 text-sm font-extrabold mt-1 transition-colors duration-200 ${isDark ? 'bg-[#151515] border-white/10 text-white focus:bg-[#1c1c1c]' : 'bg-white border-gray-300 text-slate-900 focus:border-teal-600'}`}
             />

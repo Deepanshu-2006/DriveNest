@@ -3,12 +3,18 @@ import { Separator } from "@/components/ui/separator"
 import { IoClose, IoStar } from 'react-icons/io5'
 import { useUser } from '@clerk/nextjs'
 
-function ImagesUpload({ setImages }) {
-    const [selectedFileList, setSelectedFileList] = useState([]);
+function ImagesUpload({ setImages, defaultImages = [] }) {
+    const [selectedFileList, setSelectedFileList] = useState(defaultImages);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const { isSignedIn } = useUser();
     const isDark = isSignedIn;
+
+    React.useEffect(() => {
+        if (defaultImages && defaultImages.length > 0) {
+            setSelectedFileList(defaultImages);
+        }
+    }, [defaultImages]);
     
     const onFileSelected = async (event)=>{
         const files = event.target.files;
