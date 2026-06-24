@@ -7,6 +7,7 @@ function ImagesUpload({ setImages, defaultImages = [] }) {
     const [selectedFileList, setSelectedFileList] = useState(defaultImages);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
     const { isSignedIn } = useUser();
     const isDark = isSignedIn;
 
@@ -15,15 +16,18 @@ function ImagesUpload({ setImages, defaultImages = [] }) {
             setSelectedFileList(defaultImages);
         }
     }, [defaultImages]);
-    
-    const onFileSelected = async (event)=>{
-        const files = event.target.files;
+
+    const dropJustOccurredRef = React.useRef(false);
+
+    const uploadFiles = async (files) => {
         if (!files || files.length === 0) return;
 
+        console.log("DriveNest Upload: Starting upload of files:", files);
         const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
         const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
         if (!cloudName || !uploadPreset) {
+            console.error("DriveNest Upload Error: Missing Cloudinary configuration.");
             alert("Missing Cloudinary configuration. Please add NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET to your .env.local file.");
             return;
         }
@@ -38,7 +42,7 @@ function ImagesUpload({ setImages, defaultImages = [] }) {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", uploadPreset);
-            formData.append("folder", "DriveNest"); // Upload inside the DriveNest folder
+            formData.append("folder", "DriveNest");
 
             try {
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
@@ -52,33 +56,163 @@ function ImagesUpload({ setImages, defaultImages = [] }) {
 
                 const data = await res.json();
                 
-                // Track progress incrementally
                 completedCount++;
                 setUploadProgress(Math.round((completedCount / totalFiles) * 100));
 
+                console.log("DriveNest Upload: File uploaded successfully:", data.secure_url);
                 return data.secure_url;
             } catch (err) {
-                console.error("Individual file upload error:", err);
+                console.error("DriveNest Upload: Individual file upload error:", err);
                 throw err;
             }
         });
 
         try {
             const uploadedUrls = await Promise.all(uploadPromises);
+            console.log("DriveNest Upload: All files uploaded successfully:", uploadedUrls);
             setSelectedFileList(prev => {
                 const updatedList = [...prev, ...uploadedUrls];
+                setTimeout(() => {
+                    if (setImages) {
+                        setImages(updatedList);
+                    }
+                }, 0);
                 return updatedList;
             });
-            if (setImages) {
-                setImages([...selectedFileList, ...uploadedUrls]);
-            }
         } catch (error) {
-            console.error("Cloudinary batch upload error:", error);
+            console.error("DriveNest Upload: Cloudinary batch upload error:", error);
             alert("Failed to upload one or more images. Please check your Cloudinary configuration & upload presets.");
         } finally {
             setUploading(false);
         }
     }
+    
+    const onFileSelected = async (event)=>{
+        const files = event.target.files;
+        console.log("DriveNest Upload: Files selected via dialog:", files);
+        await uploadFiles(files);
+    }
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer) {
+            e.dataTransfer.dropEffect = 'copy';
+        }
+    };
+
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer) {
+            e.dataTransfer.dropEffect = 'copy';
+        }
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const getDroppedImageUrl = (dataTransfer) => {
+        const extractImageUrlParam = (urlString) => {
+            if (!urlString) return null;
+            try {
+                const parsed = new URL(urlString);
+                // Google Images redirect parameter
+                let directUrl = parsed.searchParams.get('imgurl');
+                if (directUrl) {
+                    return decodeURIComponent(directUrl);
+                }
+                // Bing Images redirect parameter
+                directUrl = parsed.searchParams.get('mediaurl');
+                if (directUrl) {
+                    return decodeURIComponent(directUrl);
+                }
+                // General redirect parameter 'url'
+                directUrl = parsed.searchParams.get('url');
+                if (directUrl && (directUrl.startsWith('http://') || directUrl.startsWith('https://') || directUrl.includes('%3A%2F%2F'))) {
+                    return decodeURIComponent(directUrl);
+                }
+            } catch (e) {
+                // Not a valid URL structure
+            }
+            return urlString;
+        };
+
+        const uriList = dataTransfer.getData('text/uri-list');
+        if (uriList) {
+            const url = uriList.split('\n')[0].trim();
+            if (url) {
+                const cleaned = extractImageUrlParam(url);
+                if (cleaned) return cleaned;
+            }
+        }
+
+        const url = dataTransfer.getData('URL');
+        if (url) {
+            const cleaned = extractImageUrlParam(url.trim());
+            if (cleaned) return cleaned;
+        }
+
+        const html = dataTransfer.getData('text/html');
+        if (html) {
+            // First try matching src of img tag
+            const matchSrc = html.match(/<img[^>]+src="([^"]+)"/i) || html.match(/src="([^"]+)"/i);
+            if (matchSrc && matchSrc[1]) {
+                const cleaned = extractImageUrlParam(matchSrc[1].trim());
+                if (cleaned) return cleaned;
+            }
+            // Fallback to match href of anchor tag
+            const matchHref = html.match(/<a[^>]+href="([^"]+)"/i) || html.match(/href="([^"]+)"/i);
+            if (matchHref && matchHref[1]) {
+                const cleaned = extractImageUrlParam(matchHref[1].trim());
+                if (cleaned) return cleaned;
+            }
+        }
+
+        const text = dataTransfer.getData('text/plain');
+        if (text && (text.startsWith('http://') || text.startsWith('https://'))) {
+            const cleaned = extractImageUrlParam(text.trim());
+            if (cleaned) return cleaned;
+        }
+
+        return null;
+    };
+
+    const handleDrop = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+        if (uploading) return;
+        
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+            console.log("DriveNest Dropzone: Local files dropped:", files);
+            dropJustOccurredRef.current = true;
+            setTimeout(() => {
+                dropJustOccurredRef.current = false;
+            }, 50);
+            await uploadFiles(files);
+            return;
+        }
+
+        if (e.dataTransfer) {
+            const droppedUrl = getDroppedImageUrl(e.dataTransfer);
+            if (droppedUrl) {
+                console.log("DriveNest Dropzone: Web image URL dropped:", droppedUrl);
+                dropJustOccurredRef.current = true;
+                setTimeout(() => {
+                    dropJustOccurredRef.current = false;
+                }, 50);
+                await uploadFiles([droppedUrl]);
+            } else {
+                console.warn("DriveNest Dropzone: Dropped item has no files or image URLs.");
+            }
+        }
+    };
 
     const onRemoveImage = (indexToRemove) => {
         const updatedList = selectedFileList.filter((_, index) => index !== indexToRemove);
@@ -104,7 +238,7 @@ function ImagesUpload({ setImages, defaultImages = [] }) {
 
     return (
         <div>
-            <Separator className={`my-5 w-full mx-auto h-[1px] ${isDark ? 'bg-white/10' : 'bg-gray-200'}`} />
+            <Separator className={`my-5 w-full mx-auto h-px ${isDark ? 'bg-white/10' : 'bg-gray-200'}`} />
             <h2 className='font-bold text-2xl mb-3 mt-4 flex items-center gap-1.5'>
                 <span>Upload Car Images</span>
                 <span className='text-red-600 font-extrabold'>*</span>
@@ -142,8 +276,28 @@ function ImagesUpload({ setImages, defaultImages = [] }) {
                         <img src={image} className="h-32 w-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Car preview" />
                     </div>
                 ))}
-                <label htmlFor="upload-images" className={uploading ? "pointer-events-none opacity-60" : ""}>
-                    <div className={`flex flex-col items-center justify-center cursor-pointer rounded-xl border-dashed border-2 p-20 hover:scale-102 transition-all duration-200 h-32 w-full ${isDark ? 'bg-teal-950/15 border-teal-800 text-teal-400 hover:bg-teal-950/30' : 'bg-teal-50 border-teal-400 text-gray-500 hover:shadow-lg'}`}>
+                <div 
+                    onClick={() => {
+                        if (!uploading && !dropJustOccurredRef.current) {
+                            console.log("DriveNest Dropzone: Clicked to open file chooser");
+                            document.getElementById('upload-images').click();
+                        }
+                    }}
+                    className={`cursor-pointer ${uploading ? "pointer-events-none opacity-60" : ""}`}
+                    onDragOver={handleDragOver}
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                >
+                    <div className={`flex flex-col items-center justify-center pointer-events-none rounded-xl border-dashed border-2 p-20 hover:scale-102 transition-all duration-300 h-32 w-full ${
+                        isDragging 
+                            ? isDark 
+                                ? 'bg-teal-950/30 border-teal-400 text-teal-300 scale-105 shadow-xl shadow-teal-500/10' 
+                                : 'bg-teal-100 border-teal-500 text-teal-600 scale-105 shadow-lg shadow-teal-500/15'
+                            : isDark 
+                                ? 'bg-teal-950/15 border-teal-800 text-teal-400 hover:bg-teal-950/30' 
+                                : 'bg-teal-50 border-teal-400 text-gray-500 hover:shadow-lg'
+                    }`}>
                         {uploading ? (
                             <div className="w-full max-w-40 flex flex-col items-center">
                                 <span className="text-teal-600 text-xs font-bold mb-2">
@@ -156,6 +310,11 @@ function ImagesUpload({ setImages, defaultImages = [] }) {
                                     />
                                 </div>
                             </div>
+                        ) : isDragging ? (
+                            <>
+                                <h2 className={`text-4xl animate-bounce ${isDark ? 'text-teal-300' : 'text-teal-600'}`} >↓</h2>
+                                <h2 className={`text-center text-sm font-bold ${isDark ? 'text-teal-300' : 'text-teal-600'}`}>Drop images here!</h2>
+                            </>
                         ) : (
                             <>
                                 <h2 className={`text-4xl ${isDark ? 'text-teal-400' : 'text-gray-500'}`} >+</h2>
@@ -163,7 +322,7 @@ function ImagesUpload({ setImages, defaultImages = [] }) {
                             </>
                         )}
                     </div>
-                </label>
+                </div>
                 <input type="file" multiple={true} id="upload-images" className='hidden' 
                 onChange={onFileSelected} disabled={uploading} />
             </div>

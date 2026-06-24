@@ -3,6 +3,7 @@
 import { db } from "@/configs/db";
 import { CarListing, Users, CarFeatures, CarImages } from "@/configs/schema";
 import { eq } from "drizzle-orm";
+import featuresData from "@/app/Shared/features.json";
 
 export async function createCarListing(data) {
   try {
@@ -127,13 +128,24 @@ export async function getCarListingById(id) {
     }
     const images = await db.select().from(CarImages).where(eq(CarImages.carListingId, id));
     const features = await db.select().from(CarFeatures).where(eq(CarFeatures.carListingId, id));
+    
+    // Normalize features to camelCase names if they are stored as labels
+    const normalizedFeatures = {};
+    features.forEach(feat => {
+      const match = featuresData.features.find(
+        f => f.label === feat.featureName || f.name === feat.featureName
+      );
+      if (match) {
+        normalizedFeatures[match.name] = true;
+      } else {
+        normalizedFeatures[feat.featureName] = true;
+      }
+    });
+
     return JSON.parse(JSON.stringify({
       ...listing[0],
       images: images.map(img => img.imageUrl),
-      features: features.reduce((acc, feat) => {
-        acc[feat.featureName] = true;
-        return acc;
-      }, {})
+      features: normalizedFeatures
     }));
   } catch (error) {
     console.error("Failed to get car listing by ID server action error:", error);
