@@ -56,7 +56,7 @@ function SearchBar() {
                 {/* Dropdown 1: Cars */}
                 <div className="relative flex items-center">
                     <Select value={condition} onValueChange={(val) => setCondition(val)}>
-                        <SelectTrigger className={selectTriggerClass}>
+                        <SelectTrigger  className={selectTriggerClass}>
                             <SelectValue placeholder="Cars Condition" />
                         </SelectTrigger>
                         <SelectContent side="bottom">
