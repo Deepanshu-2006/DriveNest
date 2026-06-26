@@ -4,6 +4,9 @@ import { useParams, useRouter } from 'next/navigation';
 import Header from '../../_components/Header';
 import Footer from '../../_components/Footer';
 import { getCarListingById } from '@/app/actions/carListing';
+import { getOrCreateSendbirdUser } from '@/app/actions/sendbird';
+import { getSendbirdClient } from '@/lib/sendbird-client';
+import { getSendbirdUserId } from '@/lib/utils';
 import featuresData from '@/app/Shared/features.json';
 import { useUser } from '@clerk/nextjs';
 import Image from 'next/image';
@@ -104,18 +107,92 @@ function ListingDetails() {
     setActiveImageIndex(prev => (prev === listing.images.length - 1 ? 0 : prev + 1));
   };
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
+    if (!isSignedIn) {
+      toast.info("Please sign in to contact the seller.");
+      router.push('/sign-in');
+      return;
+    }
     if (!message.trim()) {
       toast.error("Please enter a message before sending.");
       return;
     }
+
+    const buyerEmail = user?.primaryEmailAddress?.emailAddress;
+    const sellerEmail = listing?.user?.email;
+
+    if (!buyerEmail || !sellerEmail) {
+      toast.error("Unable to identify the buyer or seller. Please try again.");
+      return;
+    }
+
+    if (buyerEmail === sellerEmail) {
+      toast.error("You cannot chat with yourself (you are the seller of this vehicle).");
+      return;
+    }
+
+    const buyerId = getSendbirdUserId(buyerEmail);
+    const sellerId = getSendbirdUserId(sellerEmail);
+
     setSendingMsg(true);
-    setTimeout(() => {
-      toast.success("Message sent to seller! You will receive updates in the Inbox tab.");
+    try {
+      // 1. Sync users in Sendbird (Server Actions)
+      const buyerSync = await getOrCreateSendbirdUser(
+        buyerId,
+        user.fullName || user.username || "Anonymous",
+        user.imageUrl || ""
+      );
+      const sellerSync = await getOrCreateSendbirdUser(
+        sellerId,
+        listing.user.name || "Seller",
+        ""
+      );
+
+      if (!buyerSync.success || !sellerSync.success) {
+        throw new Error(buyerSync.error || sellerSync.error || "Failed to register chat accounts.");
+      }
+
+      // 2. Connect to Sendbird client
+      const sb = getSendbirdClient();
+      if (!sb) throw new Error("Could not initialize Sendbird client.");
+      
+      // Connect user if not connected
+      if (sb.currentUser?.userId !== buyerId) {
+        await sb.connect(buyerId);
+      }
+
+      // 3. Create Group Channel
+      const channelParams = {
+        invitedUserIds: [buyerId, sellerId],
+        name: `${listing.year} ${listing.make} ${listing.model} - Chat`,
+        isDistinct: true,
+      };
+      
+      const channel = await sb.groupChannel.createChannel(channelParams);
+
+      // 4. Send Message
+      const textMessageParams = {
+        message: message.trim(),
+      };
+      
+      await new Promise((resolve, reject) => {
+        channel.sendUserMessage(textMessageParams)
+          .onSucceeded((msg) => resolve(msg))
+          .onFailed((err) => reject(err));
+      });
+
+      toast.success("Message sent to seller! Redirecting to Inbox...");
       setMessage('');
+      
+      // 5. Redirect to inbox with selected channel
+      router.push(`/profile?tab=inbox&channelUrl=${encodeURIComponent(channel.url)}`);
+    } catch (error) {
+      console.error("Error sending message via Sendbird:", error);
+      toast.error("Failed to send message: " + error.message);
+    } finally {
       setSendingMsg(false);
-    }, 1000);
+    }
   };
 
   if (loading) {

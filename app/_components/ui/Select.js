@@ -11,7 +11,7 @@ export const SelectGroup = SelectPrimitive.Group
 
 export const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Trigger
-    ref={ref}ˀ
+    ref={ref}
     className={cn(
       "flex h-10 w-full items-center justify-between rounded-md bg-white border border-gray-200 px-3 py-2 text-sm font-semibold outline-none placeholder:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 cursor-pointer dark:bg-transparent dark:border-white/10 dark:text-white **:border-none",
       className

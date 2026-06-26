@@ -142,10 +142,14 @@ export async function getCarListingById(id) {
       }
     });
 
+    const listingUser = await db.select().from(Users).where(eq(Users.id, listing[0].userId));
+    const sellerInfo = listingUser.length > 0 ? listingUser[0] : null;
+
     return JSON.parse(JSON.stringify({
       ...listing[0],
       images: images.map(img => img.imageUrl),
-      features: normalizedFeatures
+      features: normalizedFeatures,
+      user: sellerInfo
     }));
   } catch (error) {
     console.error("Failed to get car listing by ID server action error:", error);

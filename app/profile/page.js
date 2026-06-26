@@ -9,6 +9,20 @@ import { getUserCarListings, deleteCarListing } from '@/app/actions/carListing'
 import CarItem from '../_components/CarItem'
 import { Inbox, User, List, Plus, Car, Mail, Calendar, Settings, AlertTriangle } from 'lucide-react'
 import { toast } from 'react-toastify'
+import dynamic from 'next/dynamic'
+import { getSendbirdUserId } from '@/lib/utils'
+
+const SendbirdInbox = dynamic(() => import('../_components/SendbirdInbox'), {
+    ssr: false,
+    loading: () => (
+        <div className="flex items-center justify-center h-150 border border-dashed rounded-3xl dark:border-white/10 bg-white/5">
+            <div className="flex flex-col items-center gap-3">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500"></div>
+                <p className="text-sm text-slate-500 dark:text-white/40 animate-pulse">Loading inbox...</p>
+            </div>
+        </div>
+    ),
+});
 
 function Profile() {
     const { isSignedIn, isLoaded, user } = useUser();
@@ -18,7 +32,18 @@ function Profile() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedCar, setSelectedCar] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
+    const [activeTab, setActiveTab] = useState('my-listing');
     const router = useRouter();
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab');
+            if (tab) {
+                setActiveTab(tab);
+            }
+        }
+    }, []);
 
     const handleEdit = (car) => {
         router.push(`/add-listing?mode=edit&id=${car.id}`);
@@ -84,7 +109,11 @@ function Profile() {
         <div className={isDark ? "dark bg-[#050505] min-h-screen text-white transition-all duration-500" : "bg-slate-50 min-h-screen text-slate-900 transition-all duration-500"}>
             <Header />
             <div className='p-6 md:p-12 max-w-7xl mx-auto'>
-                <Tabs defaultValue="my-listing" className="w-full">
+                <Tabs value={activeTab} onValueChange={(val) => {
+                    setActiveTab(val);
+                    const newUrl = `${window.location.pathname}?tab=${val}`;
+                    window.history.replaceState(null, '', newUrl);
+                }} className="w-full">
                     {/* Tabs Navigation */}
                     <div className="flex justify-center mb-10">
                         <TabsList className={`p-1.5 rounded-full border transition-all duration-300 ${isDark ? 'bg-[#0f0f0f]/80 border-white/5 shadow-2xl' : 'bg-white border-slate-200/80 shadow-md'}`}>
@@ -175,15 +204,26 @@ function Profile() {
                             <h2 className={`text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Inbox</h2>
                             <p className={`text-sm mt-1.5 ${isDark ? 'text-white/60' : 'text-slate-500'}`}>Chat and negotiate with interested buyers.</p>
                         </div>
-                        <div className={`flex flex-col items-center justify-center p-12 md:p-20 rounded-3xl border border-dashed mt-8 text-center transition-all ${isDark ? 'bg-[#0f0f0f]/40 border-white/10' : 'bg-white border-slate-200'}`}>
-                            <div className={`p-5 rounded-2xl mb-6 ${isDark ? 'bg-[#151515] text-teal-400' : 'bg-teal-50 text-teal-600'}`}>
-                                <Mail className="w-12 h-12 animate-bounce" />
+                        {isSignedIn && user?.primaryEmailAddress?.emailAddress ? (
+                            <div className="mt-8">
+                                <SendbirdInbox 
+                                    userId={getSendbirdUserId(user.primaryEmailAddress.emailAddress)} 
+                                    nickname={user.fullName || user.username || "Anonymous"} 
+                                    profileUrl={user.imageUrl || ""} 
+                                    isDark={isDark} 
+                                />
                             </div>
-                            <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>Your inbox is clear</h3>
-                            <p className={`mt-2 max-w-sm text-sm ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
-                                When buyers reach out to you about your listed vehicles, their messages and chats will appear here.
-                            </p>
-                        </div>
+                        ) : (
+                            <div className={`flex flex-col items-center justify-center p-12 md:p-20 rounded-3xl border border-dashed mt-8 text-center transition-all ${isDark ? 'bg-[#0f0f0f]/40 border-white/10' : 'bg-white border-slate-200'}`}>
+                                <div className={`p-5 rounded-2xl mb-6 ${isDark ? 'bg-[#151515] text-teal-400' : 'bg-teal-50 text-teal-600'}`}>
+                                    <AlertTriangle className="w-12 h-12" />
+                                </div>
+                                <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>Sign in required</h3>
+                                <p className={`mt-2 max-w-sm text-sm ${isDark ? 'text-white/60' : 'text-slate-500'}`}>
+                                    Please sign in to access your chat inbox.
+                                </p>
+                            </div>
+                        )}
                     </TabsContent>
 
                     {/* Profile Content */}

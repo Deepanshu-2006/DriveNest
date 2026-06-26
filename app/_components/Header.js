@@ -1,14 +1,82 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserButton, useUser } from "@clerk/nextjs";
 import { usePathname } from 'next/navigation';
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { getSendbirdClient } from '@/lib/sendbird-client';
+import { getSendbirdUserId } from '@/lib/utils';
+import { UserEventHandler } from '@sendbird/chat';
+import { GroupChannelHandler } from '@sendbird/chat/groupChannel';
 
 function Header() {
-    const { isSignedIn } = useUser();
+    const { isSignedIn, user, isLoaded } = useUser();
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        if (!isLoaded || !isSignedIn || !user?.primaryEmailAddress?.emailAddress) {
+            setUnreadCount(0);
+            return;
+        }
+
+        let isMounted = true;
+        const handlerId = 'header-unread-count-handler';
+        const userEmail = user.primaryEmailAddress.emailAddress;
+        const sendbirdUserId = getSendbirdUserId(userEmail);
+        const sb = getSendbirdClient();
+
+        if (!sb) return;
+
+        const initUnreadCount = async () => {
+            try {
+                if (sb.currentUser?.userId !== sendbirdUserId) {
+                    await sb.connect(sendbirdUserId);
+                }
+
+                if (!isMounted) return;
+
+                const count = await sb.groupChannel.getTotalUnreadMessageCount();
+                if (isMounted) setUnreadCount(count);
+
+                const userEventHandler = new UserEventHandler();
+                userEventHandler.onTotalUnreadMessageCountChanged = (totalCount) => {
+                    if (isMounted) setUnreadCount(totalCount);
+                };
+                sb.addUserEventHandler(handlerId, userEventHandler);
+
+                const channelHandler = new GroupChannelHandler();
+                channelHandler.onMessageReceived = async (channel, message) => {
+                    try {
+                        const updatedCount = await sb.groupChannel.getTotalUnreadMessageCount();
+                        if (isMounted) setUnreadCount(updatedCount);
+                    } catch (err) {
+                        console.error("Error updating unread count on message received:", err);
+                    }
+                };
+                sb.groupChannel.addGroupChannelHandler(handlerId, channelHandler);
+
+            } catch (error) {
+                console.error("Error initializing Sendbird unread count:", error);
+            }
+        };
+
+        initUnreadCount();
+
+        return () => {
+            isMounted = false;
+            try {
+                const sbClient = getSendbirdClient();
+                if (sbClient) {
+                    sbClient.removeUserEventHandler(handlerId);
+                    sbClient.groupChannel.removeGroupChannelHandler(handlerId);
+                }
+            } catch (err) {
+                console.error("Error removing Sendbird handlers:", err);
+            }
+        };
+    }, [isLoaded, isSignedIn, user]);
 
     const isDarkHome = (pathname === '/' || pathname === '/add-listing' || pathname === '/profile' || pathname.startsWith('/listing-details') || pathname.startsWith('/search')) && isSignedIn;
 
@@ -59,10 +127,26 @@ function Header() {
                                         : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
                                 }`} href="/search?condition=preowned"> Preowned </Link>
                             </li>
+                             {isSignedIn && (
+                                <li>
+                                    <Link className={`transition flex items-center gap-1.5 ${
+                                        pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('tab=inbox')
+                                            ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4') 
+                                            : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
+                                    }`} href="/profile?tab=inbox">
+                                        <span>Inbox</span>
+                                        {unreadCount > 0 && (
+                                            <span className="flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white animate-pulse">
+                                                {unreadCount}
+                                            </span>
+                                        )}
+                                    </Link>
+                                </li>
+                            )}
                             {isSignedIn && (
                                 <li>
                                     <Link className={`transition ${
-                                        pathname === '/profile' 
+                                        pathname === '/profile' && (typeof window === 'undefined' || !window.location.search.includes('tab=inbox'))
                                             ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4') 
                                             : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
                                     }`} href="/profile"> Profile </Link>
@@ -116,7 +200,17 @@ function Header() {
                         <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/add-listing' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/add-listing"> New </Link>
                         <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/search?condition=preowned' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/search?condition=preowned"> Preowned </Link>
                         {isSignedIn && (
-                            <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/profile' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile"> Profile </Link>
+                            <>
+                                <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition flex items-center justify-between ${pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('tab=inbox') ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile?tab=inbox">
+                                    <span>Inbox</span>
+                                    {unreadCount > 0 && (
+                                        <span className="flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white">
+                                            {unreadCount}
+                                        </span>
+                                    )}
+                                </Link>
+                                <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/profile' && (typeof window === 'undefined' || !window.location.search.includes('tab=inbox')) ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile"> Profile </Link>
+                            </>
                         )}
                     </nav>
                     {!isSignedIn && (
