@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./_components/Header";
 import Hero from "./_components/Hero";
 import Category from "./_components/Category";
@@ -14,6 +14,17 @@ export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
   const isDarkHome = isLoaded && isSignedIn;
   const [selectedCategory, setSelectedCategory] = useState(null);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const element = document.getElementById("featured-showroom");
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 200);
+      }
+    }
+  }, [selectedCategory]);
 
   return (
     <div className={isDarkHome ? "dark bg-[#050505] min-h-screen text-white transition-all duration-500" : "bg-slate-50 min-h-screen text-slate-900 transition-all duration-500"}>

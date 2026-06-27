@@ -48,17 +48,32 @@ function MostSearchedCar({ selectedCategory }) {
         : listings;
 
     return (
-        <div className='px-10 md:px-20 mt-16 md:mt-24 text-center'>
-            <div className="flex flex-col items-center text-center mb-8">
-                <span className="text-xs font-bold tracking-widest text-teal-600 dark:text-teal-400 uppercase">
-                    Trending
-                </span>
-                <h2 className="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight bg-linear-to-b from-slate-900 to-slate-700 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                    Most Searched Cars
-                </h2>
-                <p className="mt-2 text-sm md:text-base text-slate-500 dark:text-slate-400 max-w-md">
-                    Discover the most popular cars
-                </p>
+        <div id="featured-showroom" className='px-10 md:px-20 mt-16 md:mt-24 text-center'>
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 text-left gap-4">
+                <div>
+                    <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                        Featured Showroom
+                    </h2>
+                    <p className="mt-2 text-sm md:text-base text-slate-500 dark:text-slate-400">
+                        The latest high-performance vehicles in our collection
+                    </p>
+                </div>
+                <div className="shrink-0 flex items-center md:pb-1">
+                    <a 
+                        href="/search" 
+                        className="text-sm font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors border-b-2 border-teal-500/30 hover:border-teal-500 pb-0.5 inline-flex items-center group"
+                    >
+                        <span>View All Inventory</span>
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            viewBox="0 0 20 20" 
+                            fill="currentColor" 
+                            className="w-0 h-4 opacity-0 overflow-hidden transition-all duration-250 ease-out group-hover:w-4 group-hover:opacity-100 group-hover:ml-1.5 group-hover:translate-x-0.5"
+                        >
+                            <path fillRule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clipRule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
             </div>
             
             {loading ? (

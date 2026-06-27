@@ -36,18 +36,16 @@ function SearchBar() {
     };
 
     const containerClasses = isDark
-        ? 'bg-[#0f0f0f]/80 text-white border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.4)] backdrop-blur-md'
+        ? 'bg-[#0f0f0f]/95 text-white border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.4)] backdrop-blur-md'
         : 'bg-white text-slate-900 border-gray-100/50 shadow-md';
 
-    const separatorClasses = `hidden md:block w-px h-8 ${
-        isDark ? 'bg-white/10' : 'bg-gray-300'
-    }`;
+    const separatorClasses = `hidden md:block w-px h-8 ${isDark ? 'bg-white/10' : 'bg-gray-300'
+        }`;
 
-    const selectTriggerClass = `w-48 border-none! dark:border-none! bg-transparent shadow-none text-sm font-semibold transition-all rounded-lg px-3 py-1.5 cursor-pointer outline-none focus:outline-none focus:ring-0 ${
-        isDark 
-            ? 'text-white/80 hover:text-teal-400 data-[state=open]:text-teal-400' 
+    const selectTriggerClass = `w-48 border-none! dark:border-none! bg-transparent shadow-none text-sm font-semibold transition-all rounded-lg px-3 py-1.5 cursor-pointer outline-none focus:outline-none focus:ring-0 ${isDark
+            ? 'text-white/80 hover:text-teal-400 data-[state=open]:text-teal-400'
             : 'text-gray-700 hover:text-teal-600 data-[state=open]:text-teal-600'
-    }`;
+        }`;
 
     return (
         <div className='flex justify-center mt-10 '>
@@ -56,7 +54,7 @@ function SearchBar() {
                 {/* Dropdown 1: Cars */}
                 <div className="relative flex items-center">
                     <Select value={condition} onValueChange={(val) => setCondition(val)}>
-                        <SelectTrigger  className={selectTriggerClass}>
+                        <SelectTrigger className={selectTriggerClass}>
                             <SelectValue placeholder="Cars Condition" />
                         </SelectTrigger>
                         <SelectContent side="bottom">
@@ -106,7 +104,7 @@ function SearchBar() {
                 </div>
 
                 {/* Search Button Icon */}
-                <button 
+                <button
                     onClick={handleSearch}
                     className="flex items-center justify-center bg-teal-600 hover:bg-teal-700 text-white rounded-full p-3 transition-all duration-200 cursor-pointer shadow-md focus:outline-none hover:scale-105 active:scale-95"
                 >

@@ -257,7 +257,7 @@ function Hero() {
                     >
                         <motion.h2
                             style={{ ...titleGlow, y: titleY }}
-                            className="text-white/95 text-3xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-none select-none mb-8 pointer-events-none"
+                            className="text-white/95 text-3xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-none select-none mb-14 pointer-events-none"
                         >
                             Find Your Dream Car
                         </motion.h2>
