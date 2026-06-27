@@ -8,8 +8,10 @@ function AntigravityCanvas({ onScrollProgress }) {
   const canvasRef = useRef(null);
   const imagesRef = useRef([]);
   const currentFrameRef = useRef(0);
+  const ctxRef = useRef(null);
+  const canvasSizedRef = useRef(false);
+  const rafRef = useRef(null);
 
-  
   const [loading, setLoading] = useState(true);
   const [loadedCount, setLoadedCount] = useState(0);
 
@@ -19,11 +21,11 @@ function AntigravityCanvas({ onScrollProgress }) {
     offset: ["start start", "end end"]
   });
 
-  // Smooth scroll progress to eliminate jitter and add a premium feel
+  // Tighter spring = more responsive, less perceived lag
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 60,
-    damping: 25,
-    restDelta: 0.001
+    stiffness: 120,
+    damping: 30,
+    restDelta: 0.0005
   });
 
   // Map progress (0.0 to 1.0) to frame index (0 to 180)
@@ -32,79 +34,97 @@ function AntigravityCanvas({ onScrollProgress }) {
   // Preload all 181 images on mount
   useEffect(() => {
     const totalFrames = 181;
-    const loadedImages = [];
+    const loadedImages = new Array(totalFrames);
     let completed = 0;
+    let lastReportedCount = 0;
 
     for (let i = 1; i <= totalFrames; i++) {
       const img = new Image();
       const frameNum = String(i).padStart(4, '0');
       img.src = `/sequence/${frameNum}.webp`;
-      
-      img.onload = () => {
+      img.decoding = 'async'; // Let browser decode off main thread
+
+      const handleDone = () => {
         completed++;
-        setLoadedCount(completed);
+        // Only trigger a re-render every 10 frames to reduce setState thrashing
+        if (completed - lastReportedCount >= 10 || completed === totalFrames) {
+          lastReportedCount = completed;
+          setLoadedCount(completed);
+        }
         if (completed === totalFrames) {
           setLoading(false);
         }
       };
 
+      img.onload = handleDone;
       img.onerror = () => {
         console.error(`Failed to load image ${frameNum}.webp`);
-        completed++;
-        setLoadedCount(completed);
-        if (completed === totalFrames) {
-          setLoading(false);
-        }
+        handleDone();
       };
 
-      loadedImages.push(img);
+      loadedImages[i - 1] = img;
     }
     imagesRef.current = loadedImages;
   }, []);
 
-  // Helper to draw a specific frame - draws 1:1 pixels to prevent double-scaling blur
-  const drawFrame = (index) => {
+  // Set up canvas ctx once after load, configure smoothing once
+  useEffect(() => {
+    if (loading) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) return;
 
-    const img = imagesRef.current[index];
-    if (!img || !img.complete) return;
-
-    const imgWidth = img.naturalWidth || 1280;
-    const imgHeight = img.naturalHeight || 720;
-
-    // Adjust canvas dimensions to match the image dimensions exactly
-    if (canvas.width !== imgWidth || canvas.height !== imgHeight) {
-      canvas.width = imgWidth;
-      canvas.height = imgHeight;
-    }
-
-    // Enable high-quality image smoothing
+    // Set smoothing quality once — no need to repeat on every draw
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
+    ctxRef.current = ctx;
 
-    // Clear and draw at 1:1 pixel size
-    ctx.clearRect(0, 0, imgWidth, imgHeight);
-    ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
-    
-    currentFrameRef.current = index;
+    drawFrame(0);
+  }, [loading]);
+
+  // Helper to draw a specific frame using rAF to stay on GPU-friendly timing
+  const drawFrame = (index) => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
+    rafRef.current = requestAnimationFrame(() => {
+      const canvas = canvasRef.current;
+      const ctx = ctxRef.current;
+      if (!canvas || !ctx) return;
+
+      const img = imagesRef.current[index];
+      if (!img || !img.complete) return;
+
+      const imgWidth = img.naturalWidth || 1280;
+      const imgHeight = img.naturalHeight || 720;
+
+      // Size canvas only once (images are all the same dimensions)
+      if (!canvasSizedRef.current) {
+        canvas.width = imgWidth;
+        canvas.height = imgHeight;
+        canvasSizedRef.current = true;
+      }
+
+      ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+      currentFrameRef.current = index;
+    });
   };
 
   // Trigger draw on frameIndex updates
   useEffect(() => {
     if (loading) return;
 
-    // Draw the initial frame
-    drawFrame(0);
-
     const unsubscribe = frameIndex.on("change", (latest) => {
       const idx = Math.min(180, Math.max(0, Math.floor(latest)));
-      drawFrame(idx);
+      if (idx !== currentFrameRef.current) {
+        drawFrame(idx);
+      }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [loading, frameIndex]);
 
   // Expose smoothProgress to parent component for scroll-linked animations
