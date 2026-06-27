@@ -113,12 +113,7 @@ function Header() {
                                         : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
                                     }`} href="/search"> Search </Link>
                             </li>
-                            <li>
-                                <Link className={`transition ${pathname === '/search?condition=preowned'
-                                        ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4')
-                                        : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
-                                    }`} href="/search?condition=preowned"> Preowned </Link>
-                            </li>
+
                             <li>
                                 <Link className={`transition flex items-center gap-1.5 ${pathname === '/compare'
                                         ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4')
@@ -200,7 +195,7 @@ function Header() {
                     <nav className="flex flex-col gap-3 font-medium text-[16px]">
                         <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/"> Home </Link>
                         <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/search' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/search"> Search </Link>
-                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/search?condition=preowned' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/search?condition=preowned"> Preowned </Link>
+
                         <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition flex items-center justify-between ${pathname === '/compare' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/compare">
                             <span>Compare</span>
                             {compareCars.length > 0 && (
