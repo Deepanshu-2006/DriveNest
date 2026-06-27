@@ -48,9 +48,18 @@ function MostSearchedCar({ selectedCategory }) {
         : listings;
 
     return (
-        <div className='px-10 md:px-20 mt-10 text-center'>
-            <h2 className='text-4xl font-bold'>Most Searched Cars</h2>
-            <p className={`text-xl mt-2 mb-10 ${isDark ? 'text-white/60' : 'text-gray-500'}`}>Discover the most popular cars</p>
+        <div className='px-10 md:px-20 mt-16 md:mt-24 text-center'>
+            <div className="flex flex-col items-center text-center mb-8">
+                <span className="text-xs font-bold tracking-widest text-teal-600 dark:text-teal-400 uppercase">
+                    Trending
+                </span>
+                <h2 className="mt-1 text-3xl md:text-4xl font-extrabold tracking-tight bg-linear-to-b from-slate-900 to-slate-700 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
+                    Most Searched Cars
+                </h2>
+                <p className="mt-2 text-sm md:text-base text-slate-500 dark:text-slate-400 max-w-md">
+                    Discover the most popular cars
+                </p>
+            </div>
             
             {loading ? (
                 <div className="flex gap-4 overflow-hidden justify-center">

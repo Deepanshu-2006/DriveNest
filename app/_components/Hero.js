@@ -142,7 +142,7 @@ function Hero() {
                         style={{ opacity: beatAOpacity, y: beatAY, filter: beatABlur }}
                         className="absolute top-28 md:top-36 flex flex-col items-center text-center px-4 max-w-xl pointer-events-auto"
                     >
-                        <div className="border border-white/10 bg-black/40 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden w-full">
+                        <div className="border border-white/10 bg-black/80 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden w-full">
                             {/* Corner tech indicators */}
                             <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-teal-500/60" />
                             <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-teal-500/60" />
@@ -170,17 +170,21 @@ function Hero() {
                         {/* HUD CAD-style Leader Callout Line pointing to the Chassis/Door */}
                         <div className="absolute left-[56%] top-60 w-3 h-3 rounded-full bg-teal-400 border border-white shadow-[0_0_12px_rgba(20,184,166,1)] -translate-x-1/2 -translate-y-1/2 hidden md:block pointer-events-none z-20" />
                         <div className="absolute left-[56%] top-60 w-5 h-5 rounded-full bg-teal-400/30 animate-ping -translate-x-1/2 -translate-y-1/2 hidden md:block pointer-events-none z-20" />
-                        
+
                         {/* Diagonal segment from chassis/door to label level */}
-                        <div className="absolute left-[45%] top-35 w-[11%] h-25 hidden md:block pointer-events-none">
+                        <div className="absolute left-[45%] top-30 w-[11%] h-30 hidden md:block pointer-events-none">
                             <svg className="w-full h-full overflow-visible">
                                 <line x1="0" y1="0" x2="100%" y2="100%" stroke="rgba(20, 250, 220, 0.95)" strokeWidth="2.5" strokeDasharray="4 2" />
                             </svg>
                         </div>
-                        
+
                         {/* Horizontal segment connecting to card */}
-                        <div className="absolute md:left-124 lg:left-128 right-[55%] top-35 border-t-2 border-dashed border-teal-400/90 hidden md:block pointer-events-none" />
-                        <div className="border border-white/10 bg-black/40 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden max-w-md w-full">
+                        <div className="absolute md:left-124 lg:left-128 right-[55%] top-30 h-0.75 hidden md:block pointer-events-none">
+                            <svg className="w-full h-full overflow-visible">
+                                <line x1="0" y1="50%" x2="100%" y2="50%" stroke="rgba(20, 250, 220, 0.95)" strokeWidth="2.5" strokeDasharray="4 2" />
+                            </svg>
+                        </div>
+                        <div className="border border-white/10 bg-black/80 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden max-w-md w-full">
                             {/* Corner tech indicators */}
                             <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-teal-500/60" />
                             <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-teal-500/60" />
@@ -208,17 +212,21 @@ function Hero() {
                         {/* HUD CAD-style Leader Callout Line pointing to the Engine */}
                         <div className="absolute left-[50%] top-55 w-3 h-3 rounded-full bg-teal-400 border border-white shadow-[0_0_12px_rgba(20,184,166,1)] -translate-x-1/2 -translate-y-1/2 hidden md:block pointer-events-none z-20" />
                         <div className="absolute left-[50%] top-55 w-5 h-5 rounded-full bg-teal-400/30 animate-ping -translate-x-1/2 -translate-y-1/2 hidden md:block pointer-events-none z-20" />
-                        
+
                         {/* Diagonal segment from engine to label level */}
-                        <div className="absolute left-[50%] top-35 w-[5%] h-20 hidden md:block pointer-events-none">
+                        <div className="absolute left-[50%] top-30 w-[5%] h-25 hidden md:block pointer-events-none">
                             <svg className="w-full h-full overflow-visible">
                                 <line x1="0" y1="100%" x2="100%" y2="0" stroke="rgba(20, 250, 220, 0.95)" strokeWidth="2.5" strokeDasharray="4 2" />
                             </svg>
                         </div>
-                        
+
                         {/* Horizontal segment connecting to card */}
-                        <div className="absolute left-[55%] md:right-124 lg:right-128 top-35 border-t-2 border-dashed border-teal-400/90 hidden md:block pointer-events-none" />
-                        <div className="border border-white/10 bg-black/40 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden max-w-md w-full text-right flex flex-col items-end">
+                        <div className="absolute left-[55%] md:right-124 lg:right-128 top-30 h-0.75 hidden md:block pointer-events-none">
+                            <svg className="w-full h-full overflow-visible">
+                                <line x1="0" y1="50%" x2="100%" y2="50%" stroke="rgba(20, 250, 220, 0.95)" strokeWidth="2.5" strokeDasharray="4 2" />
+                            </svg>
+                        </div>
+                        <div className="border border-white/10 bg-black/80 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden max-w-md w-full text-right flex flex-col items-end">
                             {/* Corner tech indicators */}
                             <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-teal-500/60" />
                             <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-teal-500/60" />
@@ -231,7 +239,7 @@ function Hero() {
                                 ANATOMY OF<br />PERFORMANCE
                             </h2>
                             <p
-                                className="text-white font-sans text-xs md:text-sm mt-3 leading-relaxed select-none"
+                                className="text-white font-sans text-sm md:text-md mt-3 leading-relaxed select-none"
                             >
                                 Witness the heart of luxury. A hand-built, twin-turbocharged V12 engine floating in pristine digital space.
                             </p>

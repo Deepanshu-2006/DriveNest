@@ -7,31 +7,31 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const CAROUSEL_SLIDES = [
-  {
-    image: info,
-    title: "Drive Your Dream, Discover the Best Deals",
-    description: "Browse an exclusive collection of new and pre-owned vehicles from trusted dealers and sellers. Compare features, explore detailed listings, and find the perfect car that fits your lifestyle and budget."
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=800',
-    title: "Premium Engineering & Luxury Redefined",
-    description: "Experience the pinnacle of automotive craftsmanship. Explore our handpicked collection of high-performance luxury sedans equipped with cutting-edge technology and unparalleled cabin comfort."
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=800',
-    title: "Progress Through Innovation & Intelligence",
-    description: "Discover electric and hybrid intelligence designed for the future of travel. Enjoy state-of-the-art virtual cockpits, exceptional drive efficiency, and sleek aerodynamic aesthetics."
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=800',
-    title: "The Best or Nothing — Timeless Authority",
-    description: "Command the road with absolute presence. Discover premium luxury SUVs and sedans designed to deliver top-tier performance, unmatched road safety, and pure sensory refinement."
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=800',
-    title: "Ultimate Off-Road Luxury & Exploration",
-    description: "Conquer any terrain with ease. View our selection of elite off-road crossovers and SUVs that blend ultimate lifestyle luxury with rugged capability, making every drive an adventure."
-  }
+    {
+        image: info,
+        title: "Drive Your Dream, Discover the Best Deals",
+        description: "Browse an exclusive collection of new and pre-owned vehicles from trusted dealers and sellers. Compare features, explore detailed listings, and find the perfect car that fits your lifestyle and budget."
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=800',
+        title: "Premium Engineering & Luxury Redefined",
+        description: "Experience the pinnacle of automotive craftsmanship. Explore our handpicked collection of high-performance luxury sedans equipped with cutting-edge technology and unparalleled cabin comfort."
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=800',
+        title: "Progress Through Innovation & Intelligence",
+        description: "Discover electric and hybrid intelligence designed for the future of travel. Enjoy state-of-the-art virtual cockpits, exceptional drive efficiency, and sleek aerodynamic aesthetics."
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=800',
+        title: "The Best or Nothing — Timeless Authority",
+        description: "Command the road with absolute presence. Discover premium luxury SUVs and sedans designed to deliver top-tier performance, unmatched road safety, and pure sensory refinement."
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=800',
+        title: "Ultimate Off-Road Luxury & Exploration",
+        description: "Conquer any terrain with ease. View our selection of elite off-road crossovers and SUVs that blend ultimate lifestyle luxury with rugged capability, making every drive an adventure."
+    }
 ];
 
 function InfoSection() {
@@ -61,9 +61,9 @@ function InfoSection() {
 
     return (
         <section>
-            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 mt-15 mb-15">
+            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 mt-20 mb-20">
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center md:gap-12">
-                    <div className="min-h-[180px] md:min-h-[220px] flex items-center">
+                    <div className="min-h-45 md:min-h-55 flex items-center">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={currentIndex}
@@ -73,7 +73,7 @@ function InfoSection() {
                                 transition={{ duration: 0.4, ease: "easeOut" }}
                                 className="max-w-prose md:max-w-none w-full"
                             >
-                                <h2 className={`text-2xl font-bold sm:text-4xl leading-tight tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                <h2 className="text-2xl font-extrabold sm:text-4xl leading-tight tracking-tight bg-linear-to-b from-slate-900 to-slate-700 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
                                     {CAROUSEL_SLIDES[currentIndex].title}
                                 </h2>
 
@@ -84,12 +84,12 @@ function InfoSection() {
                         </AnimatePresence>
                     </div>
 
-                    <div 
+                    <div
                         className="relative group w-full overflow-hidden rounded-3xl"
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                     >
-                        <div className="relative w-full h-[320px] md:h-[400px]">
+                        <div className="relative w-full h-80 md:h-100">
                             <AnimatePresence mode="wait">
                                 <motion.img
                                     key={currentIndex}
@@ -104,7 +104,7 @@ function InfoSection() {
                             </AnimatePresence>
 
                             {/* Left Navigation Arrow */}
-                            <button 
+                            <button
                                 onClick={handlePrev}
                                 className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-xs cursor-pointer select-none"
                             >
@@ -112,7 +112,7 @@ function InfoSection() {
                             </button>
 
                             {/* Right Navigation Arrow */}
-                            <button 
+                            <button
                                 onClick={handleNext}
                                 className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-xs cursor-pointer select-none"
                             >
@@ -125,11 +125,10 @@ function InfoSection() {
                                     <button
                                         key={index}
                                         onClick={() => setCurrentIndex(index)}
-                                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                                            currentIndex === index 
-                                                ? 'bg-teal-500 scale-120' 
+                                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer ${currentIndex === index
+                                                ? 'bg-teal-500 scale-120'
                                                 : 'bg-white/50 hover:bg-white/80'
-                                        }`}
+                                            }`}
                                     />
                                 ))}
                             </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "./_components/Header";
 import Hero from "./_components/Hero";
 import Category from "./_components/Category";
+import BrandTicker from "./_components/BrandTicker";
 import MostSearchedCar from "./_components/MostSearchedCar";
 import InfoSection from "./_components/InfoSection";
 import Footer from "./_components/Footer";
@@ -19,6 +20,7 @@ export default function Home() {
       <Header />
       <Hero />
       <Category selectedCategory={selectedCategory} onCategorySelect={setSelectedCategory} />
+      <BrandTicker />
       <MostSearchedCar selectedCategory={selectedCategory} />
       <InfoSection />
       <Footer />
