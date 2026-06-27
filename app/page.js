@@ -6,6 +6,7 @@ import Hero from "./_components/Hero";
 import Category from "./_components/Category";
 import BrandTicker from "./_components/BrandTicker";
 import MostSearchedCar from "./_components/MostSearchedCar";
+import ScrollTicker from "./_components/ScrollTicker";
 import InfoSection from "./_components/InfoSection";
 import Footer from "./_components/Footer";
 import { useUser } from '@clerk/nextjs';
@@ -31,6 +32,7 @@ export default function Home() {
       <Header />
       <Hero />
       <Category selectedCategory={selectedCategory} onCategorySelect={setSelectedCategory} />
+      <ScrollTicker />
       <BrandTicker />
       <MostSearchedCar selectedCategory={selectedCategory} />
       <InfoSection />

@@ -60,12 +60,12 @@ function AddListingContent() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!formData.images || formData.images.length === 0) {
             alert("Please upload at least one image before submitting.");
             return;
         }
-        
+
         setLoading(true);
 
         try {
@@ -127,7 +127,7 @@ function AddListingContent() {
                 {mode === 'edit' ? 'Edit Listing' : 'Add New Listing'}
             </h2>
             <p className={`mt-2 text-md ${isDark ? 'text-white/60' : 'text-slate-500'}`}>Fill out the details to list your vehicle on DriveNest.</p>
-            
+
             <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 items-start'>
                 {/* Form Container (2/3 width on desktop) */}
                 <div className='lg:col-span-2'>
@@ -149,7 +149,7 @@ function AddListingContent() {
                                 ))}
                             </div>
                         </div>
-                        
+
                         <Separator className={`my-8 h-px ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
 
                         {/* Features List */}
@@ -158,21 +158,21 @@ function AddListingContent() {
                             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2'>
                                 {features.features.map((item, index) => (
                                     <div key={index} className={`flex gap-3 items-center p-2 rounded-lg transition-colors duration-150 ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`} >
-                                        <Checkbox 
+                                        <Checkbox
                                             checked={!!formData[item.name]}
-                                            onCheckedChange={(value) => handleInputChange(item.name, value)} 
+                                            onCheckedChange={(value) => handleInputChange(item.name, value)}
                                         />
                                         <h2 className={`text-sm font-medium ${isDark ? 'text-white/80' : 'text-slate-700'}`}>{item.label}</h2>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        
+
                         {/* Images Upload */}
                         <div>
-                             <ImagesUpload setImages={(urls) => handleInputChange('images', urls)} defaultImages={formData.images} />
+                            <ImagesUpload setImages={(urls) => handleInputChange('images', urls)} defaultImages={formData.images} />
                         </div>
-                        
+
                         {/* Submit Button */}
                         <div className={`border-t pt-6 mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
                             <div className="text-sm font-medium">
@@ -188,8 +188,8 @@ function AddListingContent() {
                                     </p>
                                 )}
                             </div>
-                            <button 
-                                type='submit' 
+                            <button
+                                type='submit'
                                 disabled={loading}
                                 className='bg-teal-600 text-white px-8 py-3 font-bold rounded-full text-md cursor-pointer hover:bg-teal-700 hover:shadow-lg transition-all duration-200 disabled:bg-slate-300 disabled:cursor-not-allowed w-full sm:w-auto text-center'
                             >

@@ -50,7 +50,7 @@ function BrandTicker() {
   const doubleBrands = [...BRANDS, ...BRANDS];
 
   return (
-    <div className="mt-20 md:mt-28 w-full">
+    <div className="w-full">
       <div className="flex flex-col items-start text-left mb-8 px-10 md:px-20">
         <span className="text-xs font-bold tracking-widest text-teal-600 dark:text-teal-400 uppercase">
           Brands

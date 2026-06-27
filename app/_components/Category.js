@@ -34,7 +34,7 @@ function Category({ selectedCategory, onCategorySelect }) {
     const isDark = isSignedIn;
 
     return (
-        <div className='relative mt-16 md:mt-24 px-10 md:px-20 overflow-hidden py-4 w-full'>
+        <div className='relative mt-14 md:mt-20 px-10 md:px-20 overflow-hidden py-4 w-full'>
             <div className="flex flex-col items-start text-left mb-10">
                 <span className="text-xs font-bold tracking-widest text-teal-600 dark:text-teal-400 uppercase">
                     Categories
@@ -48,7 +48,7 @@ function Category({ selectedCategory, onCategorySelect }) {
             </div>
 
             {/* Apple-style Tab Bar Container */}
-            <div className="w-full border-b border-slate-200/80 dark:border-white/4">
+            <div className="w-full border-b border-slate-200/80 dark:border-white/40">
                 <div className='flex items-center justify-start md:justify-center overflow-x-auto no-scrollbar scroll-smooth gap-2 pb-px w-full'> 
                     {Data.Category.map((Category, index) => {
                         const IconComponent = categoryIcons[Category.name];
@@ -75,7 +75,7 @@ function Category({ selectedCategory, onCategorySelect }) {
                                 {isSelected && (
                                     <motion.div 
                                         layoutId="activeTabUnderline"
-                                        className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-teal-500 dark:bg-teal-400 shadow-[0_-1px_12px_rgba(20,184,166,0.6)] rounded-t-full"
+                                        className="absolute bottom-0 left-0 right-0 h-[3px] z-10 bg-teal-500 dark:bg-teal-400 shadow-[0_-1px_12px_rgba(20,184,166,0.6)] rounded-t-full"
                                         transition={{ type: "spring", stiffness: 380, damping: 30 }}
                                     />
                                 )}

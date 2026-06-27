@@ -48,7 +48,7 @@ function MostSearchedCar({ selectedCategory }) {
         : listings;
 
     return (
-        <div id="featured-showroom" className='px-10 md:px-20 mt-16 md:mt-24 text-center'>
+        <div id="featured-showroom" className='px-10 md:px-20 mt-8 md:mt-12 text-center'>
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 text-left gap-4">
                 <div>
                     <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
