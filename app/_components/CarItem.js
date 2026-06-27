@@ -11,7 +11,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCompare } from '../_context/CompareContext'
 
-
 function CarItem({ car, mode = 'view', onEdit, onDelete }) {
     const { isSignedIn } = useUser();
     const isDark = isSignedIn;
@@ -21,6 +20,10 @@ function CarItem({ car, mode = 'view', onEdit, onDelete }) {
 
     const handleCardClick = (e) => {
         if (e.target.closest('button') || e.target.closest('a')) {
+            return;
+        }
+        if (!isSignedIn) {
+            router.push('/sign-in');
             return;
         }
         if (car?.id) {
@@ -39,6 +42,10 @@ function CarItem({ car, mode = 'view', onEdit, onDelete }) {
                 <button 
                     onClick={(e) => {
                         e.stopPropagation();
+                        if (!isSignedIn) {
+                            router.push('/sign-in');
+                            return;
+                        }
                         if (isCompared) {
                             removeFromCompare(car.id);
                         } else {
@@ -85,9 +92,9 @@ function CarItem({ car, mode = 'view', onEdit, onDelete }) {
                 <div className='flex items-center justify-between mb-4'>
                     <h2 className='font-bold text-xl text-start ml-5'>${car.price}</h2>
                     <Link 
-                        href={detailUrl}
+                        href={isSignedIn ? detailUrl : '/sign-in'}
                         onClick={(e) => {
-                            if (!car?.id) e.preventDefault();
+                            if (isSignedIn && !car?.id) e.preventDefault();
                         }}
                         className={`mr-5 font-bold cursor-pointer flex gap-1 items-center transition-all duration-200 ${isDark ? 'text-teal-400 hover:text-teal-300' : 'text-teal-600 hover:text-teal-700'}`}
                     >
