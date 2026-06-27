@@ -23,7 +23,7 @@ export default function Home() {
       if (element) {
         setTimeout(() => {
           element.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 200);
+        }, 100);
       }
     }
   }, [selectedCategory]);

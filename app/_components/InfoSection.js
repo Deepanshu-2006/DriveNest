@@ -61,7 +61,13 @@ function InfoSection() {
 
     return (
         <section>
-            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 mt-20 mb-20ˀ">
+            <motion.div 
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 mt-20 mb-20"
+            >
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center md:gap-12">
                     <div className="min-h-45 md:min-h-55 flex items-center">
                         <AnimatePresence mode="wait">
@@ -119,22 +125,22 @@ function InfoSection() {
                             </button>
 
                             {/* Indicator Dots */}
-                            {/* <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 p-1.5 rounded-full bg-black/30 backdrop-blur-md">
                                 {CAROUSEL_SLIDES.map((_, index) => (
                                     <button
                                         key={index}
                                         onClick={() => setCurrentIndex(index)}
-                                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer ${currentIndex === index
-                                                ? 'bg-teal-500 scale-120'
-                                                : 'bg-white/50 hover:bg-white/80'
+                                        className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${currentIndex === index
+                                                ? 'bg-teal-400 w-7'
+                                                : 'bg-white/50 hover:bg-white/80 w-2.5'
                                             }`}
                                     />
                                 ))}
-                            </div> */}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </section>
     )
 }

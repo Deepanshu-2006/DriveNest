@@ -11,6 +11,7 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel"
 import { useUser } from '@clerk/nextjs'
+import { motion, AnimatePresence } from 'framer-motion'
 
 
 function MostSearchedCar({ selectedCategory }) {
@@ -48,7 +49,14 @@ function MostSearchedCar({ selectedCategory }) {
         : listings;
 
     return (
-        <div id="featured-showroom" className='px-10 md:px-20 mt-8 md:mt-12 text-center'>
+        <motion.div 
+            id="featured-showroom" 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className='px-10 md:px-20 mt-8 md:mt-12 text-center scroll-mt-28'
+        >
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 text-left gap-4">
                 <div>
                     <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
@@ -91,16 +99,27 @@ function MostSearchedCar({ selectedCategory }) {
                     ))}
                 </div>
             ) : filteredCars.length > 0 ? (
-                <Carousel className="cursor-pointer" opts={{ align: 'start' }}>
-                    <CarouselContent>
-                        {filteredCars.map((car, index) => (
-                            <CarouselItem key={index} className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
-                                <CarItem car={car} />
-                            </CarouselItem>
-                        ))}
+                <Carousel key={selectedCategory || 'all'} className="cursor-pointer w-full" opts={{ align: 'start', loop: true, duration: 30 }}>
+                    <CarouselContent className="-ml-4 py-4">
+                        <AnimatePresence mode="popLayout">
+                            {filteredCars.map((car, index) => (
+                                <CarouselItem key={car.id || car.listingTitle || index} className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                                    <motion.div
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.85, y: 25 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.85, y: -20 }}
+                                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1], delay: Math.min(index * 0.05, 0.2) }}
+                                        className="h-full"
+                                    >
+                                        <CarItem car={car} />
+                                    </motion.div>
+                                </CarouselItem>
+                            ))}
+                        </AnimatePresence>
                     </CarouselContent>
-                    <CarouselPrevious className="cursor-pointer" />
-                    <CarouselNext className="cursor-pointer" />
+                    <CarouselPrevious className="cursor-pointer -left-4 md:-left-6 bg-white/80 dark:bg-black/80 hover:scale-110 transition-transform shadow-lg border-slate-200 dark:border-white/10" />
+                    <CarouselNext className="cursor-pointer -right-4 md:-right-6 bg-white/80 dark:bg-black/80 hover:scale-110 transition-transform shadow-lg border-slate-200 dark:border-white/10" />
                 </Carousel>
             ) : (
                 <div className={`flex flex-col items-center justify-center p-12 border rounded-2xl ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'} shadow-md max-w-lg mx-auto transition-all duration-300`}>
@@ -115,7 +134,7 @@ function MostSearchedCar({ selectedCategory }) {
                     </p>
                 </div>
             )}
-        </div>
+        </motion.div>
     )
 }
 

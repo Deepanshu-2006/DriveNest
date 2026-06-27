@@ -19,33 +19,37 @@ function Hero() {
     const exploreOpacity = useTransform(scrollProgress, [0.0, 0.1], [1, 0]);
     const exploreY = useTransform(scrollProgress, [0.0, 0.1], [0, -10]);
 
-    // Beat A (0% - 20% scroll)
-    const beatAOpacity = useTransform(scrollProgress, [0.0, 0.02, 0.18, 0.2], [0, 1, 1, 0]);
-    const beatAY = useTransform(scrollProgress, [0.0, 0.02, 0.18, 0.2], [20, 0, 0, -20]);
+    // Beat A (0% - 20% scroll) — wider fade windows for smooth entry/exit
+    const beatAOpacity = useTransform(scrollProgress, [0.0, 0.05, 0.17, 0.22], [0, 1, 1, 0]);
+    const beatAY = useTransform(scrollProgress, [0.0, 0.05, 0.17, 0.22], [32, 0, 0, -32]);
+    const beatAScale = useTransform(scrollProgress, [0.0, 0.05, 0.17, 0.22], [0.94, 1, 1, 0.94]);
 
     // Beat B (25% - 45% scroll)
-    const beatBOpacity = useTransform(scrollProgress, [0.25, 0.27, 0.43, 0.45], [0, 1, 1, 0]);
-    const beatBY = useTransform(scrollProgress, [0.25, 0.27, 0.43, 0.45], [20, 0, 0, -20]);
+    const beatBOpacity = useTransform(scrollProgress, [0.23, 0.29, 0.42, 0.47], [0, 1, 1, 0]);
+    const beatBY = useTransform(scrollProgress, [0.23, 0.29, 0.42, 0.47], [32, 0, 0, -32]);
+    const beatBScale = useTransform(scrollProgress, [0.23, 0.29, 0.42, 0.47], [0.94, 1, 1, 0.94]);
 
     // Beat C (50% - 70% scroll)
-    const beatCOpacity = useTransform(scrollProgress, [0.5, 0.52, 0.68, 0.7], [0, 1, 1, 0]);
-    const beatCY = useTransform(scrollProgress, [0.5, 0.52, 0.68, 0.7], [20, 0, 0, -20]);
+    const beatCOpacity = useTransform(scrollProgress, [0.48, 0.54, 0.67, 0.72], [0, 1, 1, 0]);
+    const beatCY = useTransform(scrollProgress, [0.48, 0.54, 0.67, 0.72], [32, 0, 0, -32]);
+    const beatCScale = useTransform(scrollProgress, [0.48, 0.54, 0.67, 0.72], [0.94, 1, 1, 0.94]);
 
-    // Beat D (75% - 100% scroll) -> Fades in and stays visible until the end of the hero container
-    const beatDOpacity = useTransform(scrollProgress, [0.75, 0.77, 1.0, 1.0], [0, 1, 1, 1]);
-    const beatDY = useTransform(scrollProgress, [0.75, 0.77, 1.0, 1.0], [20, 0, 0, 0]);
+    // Beat D (75% - 100% scroll) -> Fades in and stays visible until the end
+    const beatDOpacity = useTransform(scrollProgress, [0.73, 0.8, 1.0, 1.0], [0, 1, 1, 1]);
+    const beatDY = useTransform(scrollProgress, [0.73, 0.8, 1.0, 1.0], [32, 0, 0, 0]);
+    const beatDScale = useTransform(scrollProgress, [0.73, 0.8, 1.0, 1.0], [0.94, 1, 1, 1]);
 
-    // Spring-based blur values to animate text out-of-focus dynamically
-    const beatABlurVal = useTransform(scrollProgress, [0.0, 0.02, 0.18, 0.2], [16, 0, 0, 16]);
+    // Blur values — wider fade windows match opacity
+    const beatABlurVal = useTransform(scrollProgress, [0.0, 0.05, 0.17, 0.22], [14, 0, 0, 14]);
     const beatABlur = useTransform(beatABlurVal, (v) => `blur(${v}px)`);
 
-    const beatBBlurVal = useTransform(scrollProgress, [0.25, 0.27, 0.43, 0.45], [16, 0, 0, 16]);
+    const beatBBlurVal = useTransform(scrollProgress, [0.23, 0.29, 0.42, 0.47], [14, 0, 0, 14]);
     const beatBBlur = useTransform(beatBBlurVal, (v) => `blur(${v}px)`);
 
-    const beatCBlurVal = useTransform(scrollProgress, [0.5, 0.52, 0.68, 0.7], [16, 0, 0, 16]);
+    const beatCBlurVal = useTransform(scrollProgress, [0.48, 0.54, 0.67, 0.72], [14, 0, 0, 14]);
     const beatCBlur = useTransform(beatCBlurVal, (v) => `blur(${v}px)`);
 
-    const beatDBlurVal = useTransform(scrollProgress, [0.75, 0.77, 1.0, 1.0], [16, 0, 0, 0]);
+    const beatDBlurVal = useTransform(scrollProgress, [0.73, 0.8, 1.0, 1.0], [14, 0, 0, 0]);
     const beatDBlur = useTransform(beatDBlurVal, (v) => `blur(${v}px)`);
 
     const searchBarVisibility = useTransform(scrollProgress, (value) => {
@@ -61,17 +65,7 @@ function Hero() {
     // SearchBar slides up from bottom towards the center
     const searchBarY = useTransform(scrollProgress, [0.75, 0.9], [150, 0]);
 
-    if (!isLoaded) {
-        // Elegant shimmer placeholder to prevent layout shifts during auth evaluation
-        return (
-            <div className="w-full h-150 bg-slate-50 flex items-center justify-center">
-                <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-teal-600 animate-spin"></div>
-            </div>
-        );
-    }
-
-    // Guest (Not Signed In) View
-    if (!isSignedIn) {
+    if (!isLoaded || !isSignedIn) {
         return (
             <div className="w-full">
                 {/* Top section with background */}
@@ -139,24 +133,20 @@ function Hero() {
 
                     {/* Beat A: Re-engineering the Search */}
                     <motion.div
-                        style={{ opacity: beatAOpacity, y: beatAY, filter: beatABlur }}
-                        className="absolute top-28 md:top-36 flex flex-col items-center text-center px-4 max-w-xl pointer-events-auto"
+                        style={{ opacity: beatAOpacity, y: beatAY, filter: beatABlur, scale: beatAScale }}
+                        className="absolute bottom-24 md:bottom-auto md:top-36 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto flex flex-col items-center text-center px-4 w-[92%] md:max-w-xl pointer-events-auto will-change-transform"
                     >
-                        <div className="border border-white/10 bg-black/80 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden w-full">
+                        <div className="border border-white/10 bg-black/85 backdrop-blur-md rounded-2xl p-4 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden w-full">
                             {/* Corner tech indicators */}
                             <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-teal-500/60" />
                             <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-teal-500/60" />
                             <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-teal-500/60" />
                             <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-teal-500/60" />
 
-                            <h2
-                                className="text-white text-xl md:text-3xl font-black tracking-wider uppercase leading-snug select-none"
-                            >
+                            <h2 className="text-white text-base md:text-3xl font-black tracking-wider uppercase leading-snug select-none">
                                 CAR ACQUISITION RE-ENGINEERED
                             </h2>
-                            <p
-                                className="text-white font-sans text-xs md:text-sm mt-3 leading-relaxed select-none"
-                            >
+                            <p className="text-white/80 font-sans text-xs mt-2 leading-relaxed select-none">
                                 Welcome to DriveNest. Where exceptional machinery emerges from the digital void, offering unprecedented clarity.
                             </p>
                         </div>
@@ -164,8 +154,8 @@ function Hero() {
 
                     {/* Beat B: Absolute Transparency */}
                     <motion.div
-                        style={{ opacity: beatBOpacity, y: beatBY, filter: beatBBlur }}
-                        className="absolute top-28 md:top-36 w-full px-6 md:px-12 lg:px-16 flex flex-col items-start text-left pointer-events-auto"
+                        style={{ opacity: beatBOpacity, y: beatBY, filter: beatBBlur, scale: beatBScale }}
+                        className="absolute bottom-24 md:bottom-auto md:top-36 w-full px-4 md:px-12 lg:px-16 flex flex-col items-start text-left pointer-events-auto will-change-transform"
                     >
                         {/* HUD CAD-style Leader Callout Line pointing to the Chassis/Door */}
                         <div className="absolute left-[56%] top-60 w-3 h-3 rounded-full bg-teal-400 border border-white shadow-[0_0_12px_rgba(20,184,166,1)] -translate-x-1/2 -translate-y-1/2 hidden md:block pointer-events-none z-20" />
@@ -184,21 +174,17 @@ function Hero() {
                                 <line x1="0" y1="50%" x2="100%" y2="50%" stroke="rgba(20, 250, 220, 0.95)" strokeWidth="2.5" strokeDasharray="4 2" />
                             </svg>
                         </div>
-                        <div className="border border-white/10 bg-black/80 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden max-w-md w-full">
+                        <div className="border border-white/10 bg-black/85 backdrop-blur-md rounded-2xl p-4 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden w-[92%] md:max-w-md">
                             {/* Corner tech indicators */}
                             <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-teal-500/60" />
                             <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-teal-500/60" />
                             <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-teal-500/60" />
                             <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-teal-500/60" />
 
-                            <h2
-                                className="text-white text-xl md:text-3xl font-black tracking-wider uppercase leading-tight select-none"
-                            >
+                            <h2 className="text-white text-base md:text-3xl font-black tracking-wider uppercase leading-tight select-none">
                                 UNCOMPROMISING<br />DETAIL
                             </h2>
-                            <p
-                                className="text-white font-sans text-xs md:text-sm mt-3 leading-relaxed select-none"
-                            >
+                            <p className="text-white/80 font-sans text-xs mt-2 leading-relaxed select-none">
                                 We dismantle the mystery. Inspect every body panel, wheel structure, and cabin space suspended in zero-gravity.
                             </p>
                         </div>
@@ -206,8 +192,8 @@ function Hero() {
 
                     {/* Beat C: Piece by Perfect Piece */}
                     <motion.div
-                        style={{ opacity: beatCOpacity, y: beatCY, filter: beatCBlur }}
-                        className="absolute top-28 md:top-36 w-full px-6 md:px-12 lg:px-16 flex flex-col items-end text-right pointer-events-auto"
+                        style={{ opacity: beatCOpacity, y: beatCY, filter: beatCBlur, scale: beatCScale }}
+                        className="absolute bottom-24 md:bottom-auto md:top-36 w-full px-4 md:px-12 lg:px-16 flex flex-col items-end text-right pointer-events-auto will-change-transform"
                     >
                         {/* HUD CAD-style Leader Callout Line pointing to the Engine */}
                         <div className="absolute left-[50%] top-55 w-3 h-3 rounded-full bg-teal-400 border border-white shadow-[0_0_12px_rgba(20,184,166,1)] -translate-x-1/2 -translate-y-1/2 hidden md:block pointer-events-none z-20" />
@@ -226,21 +212,17 @@ function Hero() {
                                 <line x1="0" y1="50%" x2="100%" y2="50%" stroke="rgba(20, 250, 220, 0.95)" strokeWidth="2.5" strokeDasharray="4 2" />
                             </svg>
                         </div>
-                        <div className="border border-white/10 bg-black/80 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden max-w-md w-full text-right flex flex-col items-end">
+                        <div className="border border-white/10 bg-black/85 backdrop-blur-md rounded-2xl p-4 md:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] relative overflow-hidden w-[92%] md:max-w-md text-right flex flex-col items-end">
                             {/* Corner tech indicators */}
                             <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-teal-500/60" />
                             <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-teal-500/60" />
                             <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-teal-500/60" />
                             <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-teal-500/60" />
 
-                            <h2
-                                className="text-white text-xl md:text-3xl font-black tracking-wider uppercase leading-tight select-none"
-                            >
+                            <h2 className="text-white text-base md:text-3xl font-black tracking-wider uppercase leading-tight select-none">
                                 ANATOMY OF<br />PERFORMANCE
                             </h2>
-                            <p
-                                className="text-white font-sans text-sm md:text-md mt-3 leading-relaxed select-none"
-                            >
+                            <p className="text-white/80 font-sans text-xs mt-2 leading-relaxed select-none">
                                 Witness the heart of luxury. A hand-built, twin-turbocharged V12 engine floating in pristine digital space.
                             </p>
                         </div>
@@ -251,13 +233,14 @@ function Hero() {
                         style={{
                             opacity: beatDOpacity,
                             filter: beatDBlur,
+                            scale: beatDScale,
                             visibility: searchBarVisibility
                         }}
-                        className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none"
+                        className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none will-change-transform"
                     >
                         <motion.h2
                             style={{ ...titleGlow, y: titleY }}
-                            className="text-white/95 text-3xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-none select-none mb-14 pointer-events-none"
+                            className="text-white/95 text-2xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-none select-none mb-8 md:mb-14 pointer-events-none px-4 text-center"
                         >
                             Find Your Dream Car
                         </motion.h2>

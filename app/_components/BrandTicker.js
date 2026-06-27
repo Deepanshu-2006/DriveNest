@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import {
   SiToyota,
   SiBmw,
@@ -51,7 +52,13 @@ function BrandTicker() {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col items-start text-left mb-8 px-10 md:px-20">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="flex flex-col items-start text-left mb-8 px-10 md:px-20"
+      >
         <span className="text-xs font-bold tracking-widest text-teal-600 dark:text-teal-400 uppercase">
           Brands
         </span>
@@ -61,7 +68,7 @@ function BrandTicker() {
         <p className="mt-2 text-sm md:text-base text-slate-500 dark:text-slate-400 max-w-md">
           Search vehicles from top automotive manufacturers
         </p>
-      </div>
+      </motion.div>
 
       {/* Marquee Wrapper with side fading gradients and subtle border lines */}
       <div className="relative w-full overflow-hidden py-8 border-y transition-all duration-300 border-slate-100 bg-slate-50/30 dark:border-white/5 dark:bg-white/1">

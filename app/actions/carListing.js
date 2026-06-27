@@ -91,19 +91,25 @@ export async function getUserCarListings(email) {
     
     const userId = userRecord[0].id;
     
-    const listings = await db.select().from(CarListing).where(eq(CarListing.userId, userId));
+    const rows = await db
+      .select()
+      .from(CarListing)
+      .leftJoin(CarImages, eq(CarImages.carListingId, CarListing.id))
+      .where(eq(CarListing.userId, userId));
+      
+    const listingMap = new Map();
+    for (const row of rows) {
+      const listing = row.carListing;
+      if (!listing) continue;
+      if (!listingMap.has(listing.id)) {
+        listingMap.set(listing.id, { ...listing, images: [] });
+      }
+      if (row.carImages) {
+        listingMap.get(listing.id).images.push(row.carImages);
+      }
+    }
     
-    const listingsWithImages = await Promise.all(
-      listings.map(async (listing) => {
-        const images = await db.select().from(CarImages).where(eq(CarImages.carListingId, listing.id));
-        return {
-          ...listing,
-          images
-        };
-      })
-    );
-    
-    return JSON.parse(JSON.stringify(listingsWithImages));
+    return JSON.parse(JSON.stringify(Array.from(listingMap.values())));
   } catch (error) {
     console.error("Failed to fetch user listings server action error:", error);
     return [];
@@ -126,9 +132,12 @@ export async function getCarListingById(id) {
     if (listing.length === 0) {
       return null;
     }
-    const images = await db.select().from(CarImages).where(eq(CarImages.carListingId, id));
-    const features = await db.select().from(CarFeatures).where(eq(CarFeatures.carListingId, id));
-    
+    const [images, features, listingUser] = await Promise.all([
+      db.select().from(CarImages).where(eq(CarImages.carListingId, id)),
+      db.select().from(CarFeatures).where(eq(CarFeatures.carListingId, id)),
+      db.select().from(Users).where(eq(Users.id, listing[0].userId))
+    ]);
+
     // Normalize features to camelCase names if they are stored as labels
     const normalizedFeatures = {};
     features.forEach(feat => {
@@ -142,7 +151,6 @@ export async function getCarListingById(id) {
       }
     });
 
-    const listingUser = await db.select().from(Users).where(eq(Users.id, listing[0].userId));
     const sellerInfo = listingUser.length > 0 ? listingUser[0] : null;
 
     return JSON.parse(JSON.stringify({
@@ -220,22 +228,32 @@ export async function updateCarListing(id, data) {
 
 export async function getAllCarListings() {
   try {
-    const listings = await db.select().from(CarListing);
-    const listingsWithImages = await Promise.all(
-      listings.map(async (listing) => {
-        const images = await db.select().from(CarImages).where(eq(CarImages.carListingId, listing.id));
-        return {
-          ...listing,
-          images
-        };
-      })
-    );
-    return JSON.parse(JSON.stringify(listingsWithImages));
+    // Single JOIN query instead of N+1 — fetches all listings + images in one round-trip
+    const rows = await db
+      .select()
+      .from(CarListing)
+      .leftJoin(CarImages, eq(CarImages.carListingId, CarListing.id));
+
+    // Drizzle JOIN result keys match the pgTable() string name (e.g. 'carListing', 'carImages')
+    const listingMap = new Map();
+    for (const row of rows) {
+      const listing = row.carListing;
+      if (!listing) continue;
+      if (!listingMap.has(listing.id)) {
+        listingMap.set(listing.id, { ...listing, images: [] });
+      }
+      if (row.carImages) {
+        listingMap.get(listing.id).images.push(row.carImages);
+      }
+    }
+
+    return JSON.parse(JSON.stringify(Array.from(listingMap.values())));
   } catch (error) {
     console.error("Failed to fetch all listings server action error:", error);
     return [];
   }
 }
+
 
 
 

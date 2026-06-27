@@ -42,6 +42,7 @@ function SearchContent() {
 
   // Load URL query parameters on mount
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
     const urlCategory = searchParams.get('category');
     const urlCondition = searchParams.get('condition');
     const urlMake = searchParams.get('make');

@@ -4,6 +4,7 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import { usePathname, useSearchParams } from 'next/navigation';
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
 import { getSendbirdClient } from '@/lib/sendbird-client';
 import { getSendbirdUserId } from '@/lib/utils';
 import { UserEventHandler } from '@sendbird/chat';
@@ -195,58 +196,66 @@ function HeaderContent() {
             </div>
 
             {/* Mobile Menu Drawer */}
-            {isOpen && (
-                <div className={`md:hidden border-t px-4 py-4 space-y-3 shadow-inner animate-in fade-in slide-in-from-top-2 duration-200 ${isDarkHome ? 'border-white/10 bg-black/95' : 'border-gray-100 bg-white'}`}>
-                    <nav className="flex flex-col gap-3 font-medium text-[16px]">
-                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/"> Home </Link>
-                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/search' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/search"> Search </Link>
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0, height: 0, y: -10 }}
+                        animate={{ opacity: 1, height: "auto", y: 0 }}
+                        exit={{ opacity: 0, height: 0, y: -10 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className={`md:hidden border-t px-4 py-4 space-y-3 shadow-inner overflow-hidden ${isDarkHome ? 'border-white/10 bg-black/95' : 'border-gray-100 bg-white'}`}
+                    >
+                        <nav className="flex flex-col gap-3 font-medium text-[16px]">
+                            <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/"> Home </Link>
+                            <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/search' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/search"> Search </Link>
 
-                        <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition flex items-center justify-between ${pathname === '/compare' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/compare">
-                            <span>Compare</span>
-                            {compareCars.length > 0 && (
-                                <span className="flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-teal-500 text-[10px] font-black text-white">
-                                    {compareCars.length}
-                                </span>
+                            <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition flex items-center justify-between ${pathname === '/compare' ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/compare">
+                                <span>Compare</span>
+                                {compareCars.length > 0 && (
+                                    <span className="flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-teal-500 text-[10px] font-black text-white">
+                                        {compareCars.length}
+                                    </span>
+                                )}
+                            </Link>
+                            {isSignedIn && (
+                                <>
+                                    <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition flex items-center justify-between ${isInboxActive ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile?tab=inbox">
+                                        <span>Inbox</span>
+                                        {unreadCount > 0 && (
+                                            <span className="flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white">
+                                                {unreadCount}
+                                            </span>
+                                        )}
+                                    </Link>
+                                    <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${isProfileActive ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile"> Profile </Link>
+                                </>
                             )}
-                        </Link>
-                        {isSignedIn && (
-                            <>
-                                <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition flex items-center justify-between ${isInboxActive ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile?tab=inbox">
-                                    <span>Inbox</span>
-                                    {unreadCount > 0 && (
-                                        <span className="flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white">
-                                            {unreadCount}
-                                        </span>
-                                    )}
+                        </nav>
+                        {!isSignedIn && (
+                            <div className="pt-2 border-t border-gray-100">
+                                <Link
+                                    onClick={() => setIsOpen(false)}
+                                    className="block text-center rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 shadow-sm"
+                                    href="/sign-in"
+                                >
+                                    Get Started
                                 </Link>
-                                <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${isProfileActive ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile"> Profile </Link>
-                            </>
+                            </div>
                         )}
-                    </nav>
-                    {!isSignedIn && (
-                        <div className="pt-2 border-t border-gray-100">
-                            <Link
-                                onClick={() => setIsOpen(false)}
-                                className="block text-center rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 shadow-sm"
-                                href="/sign-in"
-                            >
-                                Get Started
-                            </Link>
-                        </div>
-                    )}
-                    {isSignedIn && (
-                        <div className={`pt-2 border-t ${isDarkHome ? 'border-white/10' : 'border-gray-100'}`}>
-                            <Link
-                                onClick={() => setIsOpen(false)}
-                                className="block text-center rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 shadow-sm"
-                                href={pathname === '/add-listing' ? '/profile' : '/add-listing'}
-                            >
-                                {pathname === '/add-listing' ? 'My Profile' : 'Submit Listing'}
-                            </Link>
-                        </div>
-                    )}
-                </div>
-            )}
+                        {isSignedIn && (
+                            <div className={`pt-2 border-t ${isDarkHome ? 'border-white/10' : 'border-gray-100'}`}>
+                                <Link
+                                    onClick={() => setIsOpen(false)}
+                                    className="block text-center rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 shadow-sm"
+                                    href={pathname === '/add-listing' ? '/profile' : '/add-listing'}
+                                >
+                                    {pathname === '/add-listing' ? 'My Profile' : 'Submit Listing'}
+                                </Link>
+                            </div>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </header>
     );
 }

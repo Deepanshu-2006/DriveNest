@@ -34,7 +34,13 @@ function Category({ selectedCategory, onCategorySelect }) {
     const isDark = isSignedIn;
 
     return (
-        <div className='relative mt-14 md:mt-20 px-10 md:px-20 overflow-hidden py-4 w-full'>
+        <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className='relative mt-14 md:mt-20 px-10 md:px-20 overflow-hidden py-4 w-full'
+        >
             <div className="flex flex-col items-start text-left mb-10">
                 <span className="text-xs font-bold tracking-widest text-teal-600 dark:text-teal-400 uppercase">
                     Categories
@@ -59,7 +65,9 @@ function Category({ selectedCategory, onCategorySelect }) {
                             : 'text-slate-500 dark:text-white/40 hover:text-slate-800 dark:hover:text-white font-bold';
 
                         return (
-                            <button 
+                            <motion.button 
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                                 key={index} 
                                 onClick={() => onCategorySelect && onCategorySelect(isSelected ? null : Category.name)}
                                 className={`relative pb-4 pt-2 px-5 md:px-6 flex items-center justify-center gap-2 group cursor-pointer transition-colors duration-200 select-none shrink-0 outline-hidden ${textClasses}`}
@@ -79,12 +87,12 @@ function Category({ selectedCategory, onCategorySelect }) {
                                         transition={{ type: "spring", stiffness: 380, damping: 30 }}
                                     />
                                 )}
-                            </button>
+                            </motion.button>
                         );
                     })}
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }
 

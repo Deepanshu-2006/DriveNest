@@ -147,6 +147,13 @@ html {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.1) #050505;
   }
+  /* Global tactile feedback for interactive elements */
+  button, a {
+    @apply transition-all duration-200 ease-out;
+  }
+  button:active, a:active {
+    transform: scale(0.97);
+  }
 }
 
 /* Custom Scrollbar Styles */

@@ -36,7 +36,7 @@ function CarItem({ car, mode = 'view', onEdit, onDelete }) {
     return (
         <div 
             onClick={handleCardClick}
-            className={`relative border rounded-xl hover:scale-102 transition-all duration-200 cursor-pointer my-2 ${isDark ? 'border-white/10 bg-[#0f0f0f] text-white hover:shadow-[0_4px_30px_rgba(20,184,166,0.05)]' : 'border-gray-300 bg-white text-slate-900 hover:shadow-xl'}`}
+            className={`relative border rounded-2xl hover:-translate-y-2 transition-all duration-300 ease-out cursor-pointer my-2 group overflow-hidden ${isDark ? 'border-white/10 bg-[#0f0f0f] text-white hover:border-teal-500/50 hover:shadow-[0_12px_40px_rgba(20,184,166,0.15)]' : 'border-gray-200 bg-white text-slate-900 hover:border-teal-500/40 hover:shadow-2xl'}`}
         >
             {car?.id && (
                 <button 
@@ -64,13 +64,15 @@ function CarItem({ car, mode = 'view', onEdit, onDelete }) {
                     <GitCompare className="h-4 w-4" />
                 </button>
             )}
-            <h2 className={`absolute top-3 left-3 text-white text-xs font-bold px-2 py-1 rounded-full z-10 ${
+            <h2 className={`absolute top-3 left-3 text-white text-xs font-bold px-2.5 py-1 rounded-full z-10 shadow-sm ${
                 car?.condition === 'Used' ? 'bg-amber-600' :
                 car?.condition === 'Certified Pre-Owned' ? 'bg-teal-600' : 'bg-emerald-500'
             }`}>
                 {car?.condition || 'New'}
             </h2>
-            <img src={car?.image} className='rounded-t-xl w-full h-48 object-cover' alt="" />
+            <div className="overflow-hidden rounded-t-2xl">
+                <img src={car?.image} className='w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500 ease-out' alt="" />
+            </div>
             <div className=''>
                 <h2 className={`font-bold text-xl mb-2 text-start mt-4 ml-5 ${isDark ? 'text-white' : 'text-black'}`}>{car?.name}</h2>
                 <Separator className={`my-3 w-[90%] mx-auto h-px ${isDark ? 'bg-white/10' : 'bg-gray-200'}`} />
