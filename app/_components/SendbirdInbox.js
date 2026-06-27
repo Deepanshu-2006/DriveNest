@@ -40,7 +40,8 @@ function SendbirdInbox({ userId, nickname, profileUrl, isDark }) {
         theme={isDark ? 'dark' : 'light'}
       >
         <div className="flex h-150 rounded-3xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-lg bg-white dark:bg-[#0f0f0f]">
-          <div className="w-1/3 border-r border-slate-200 dark:border-white/10 bg-white dark:bg-[#0f0f0f]">
+          {/* Channel list: takes full width on mobile when no channel is active, hides when chat is active */}
+          <div className={`${channelUrl ? 'hidden md:block' : 'w-full'} md:w-1/3 border-r border-slate-200 dark:border-white/10 bg-white dark:bg-[#0f0f0f]`}>
             <ChannelList
               onChannelSelect={(channel) => {
                 if (channel && channel.url) {
@@ -54,9 +55,18 @@ function SendbirdInbox({ userId, nickname, profileUrl, isDark }) {
               }}
             />
           </div>
-          <div className="w-2/3 bg-slate-50 dark:bg-black/20 h-full">
+
+          {/* Active conversation panel: takes full width on mobile when selected, hides when not active */}
+          <div className={`${channelUrl ? 'w-full' : 'hidden md:flex flex-col'} md:w-2/3 bg-slate-50 dark:bg-black/20 h-full`}>
             {channelUrl ? (
-              <Channel channelUrl={channelUrl} />
+              <Channel 
+                channelUrl={channelUrl} 
+                onBackClick={() => {
+                  setChannelUrl('');
+                  const newUrl = `${window.location.pathname}?tab=inbox`;
+                  window.history.replaceState(null, '', newUrl);
+                }}
+              />
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-white/40">
                 <MessageSquare className="w-16 h-16 mb-4 stroke-1 animate-pulse text-teal-500" />

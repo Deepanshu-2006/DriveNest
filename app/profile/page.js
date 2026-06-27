@@ -1,9 +1,9 @@
 "use client";
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import Header from '../_components/Header'
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getUserCarListings, deleteCarListing } from '@/app/actions/carListing'
 import CarItem from '../_components/CarItem'
@@ -24,7 +24,7 @@ const SendbirdInbox = dynamic(() => import('../_components/SendbirdInbox'), {
     ),
 });
 
-function Profile() {
+function ProfileContent() {
     const { isSignedIn, isLoaded, user } = useUser();
     const isDark = isLoaded && isSignedIn;
     const [userListings, setUserListings] = useState([]);
@@ -34,16 +34,17 @@ function Profile() {
     const [deletingId, setDeletingId] = useState(null);
     const [activeTab, setActiveTab] = useState('my-listing');
     const router = useRouter();
+    const searchParams = useSearchParams();
 
+    // Dynamically update the active tab when route search params change
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search);
-            const tab = params.get('tab');
-            if (tab) {
-                setActiveTab(tab);
-            }
+        const tab = searchParams.get('tab');
+        if (tab) {
+            setActiveTab(tab);
+        } else {
+            setActiveTab('my-listing');
         }
-    }, []);
+    }, [searchParams]);
 
     const handleEdit = (car) => {
         router.push(`/add-listing?mode=edit&id=${car.id}`);
@@ -107,7 +108,6 @@ function Profile() {
 
     return (
         <div className={isDark ? "dark bg-[#050505] min-h-screen text-white transition-all duration-500" : "bg-slate-50 min-h-screen text-slate-900 transition-all duration-500"}>
-            <Header />
             <div className='p-6 md:p-12 max-w-7xl mx-auto'>
                 <Tabs value={activeTab} onValueChange={(val) => {
                     setActiveTab(val);
@@ -347,4 +347,15 @@ function Profile() {
     )
 }
 
-export default Profile
+export default function Profile() {
+    return (
+        <Suspense fallback={
+            <div className="flex justify-center items-center min-h-[100vh] bg-slate-50 dark:bg-[#050505]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            </div>
+        }>
+            <Header />
+            <ProfileContent />
+        </Suspense>
+    );
+}

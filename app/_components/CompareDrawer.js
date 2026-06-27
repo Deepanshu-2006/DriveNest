@@ -12,19 +12,44 @@ function CompareDrawer() {
 
     const [isExpanded, setIsExpanded] = useState(false);
     const prevLength = useRef(0);
+    const isAutoOpenedRef = useRef(false);
+    const autoMinimizeTimeoutRef = useRef(null);
+
+    const startAutoMinimizeTimer = () => {
+        if (!isAutoOpenedRef.current) return;
+        if (autoMinimizeTimeoutRef.current) {
+            clearTimeout(autoMinimizeTimeoutRef.current);
+        }
+        autoMinimizeTimeoutRef.current = setTimeout(() => {
+            setIsExpanded(false);
+            isAutoOpenedRef.current = false;
+        }, 4000);
+    };
+
+    const clearAutoMinimizeTimer = () => {
+        if (autoMinimizeTimeoutRef.current) {
+            clearTimeout(autoMinimizeTimeoutRef.current);
+            autoMinimizeTimeoutRef.current = null;
+        }
+    };
 
     // Initial sync on mount
     useEffect(() => {
         prevLength.current = compareCars.length;
+        return () => clearAutoMinimizeTimer();
     }, []);
 
     // Auto expand only when a new car is added to the list
     useEffect(() => {
         if (compareCars.length > prevLength.current) {
+            isAutoOpenedRef.current = true;
             setIsExpanded(true);
+            startAutoMinimizeTimer();
         }
         if (compareCars.length === 0) {
             setIsExpanded(false);
+            isAutoOpenedRef.current = false;
+            clearAutoMinimizeTimer();
         }
         prevLength.current = compareCars.length;
     }, [compareCars.length]);
@@ -37,7 +62,11 @@ function CompareDrawer() {
     if (!isExpanded) {
         return (
             <button 
-                onClick={() => setIsExpanded(true)}
+                onClick={() => {
+                    isAutoOpenedRef.current = false;
+                    setIsExpanded(true);
+                    clearAutoMinimizeTimer();
+                }}
                 className={`fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer border hover:shadow-teal-500/20 active:scale-95 group ${
                     isDark 
                         ? 'border-white/10 bg-teal-600 text-white' 
@@ -55,7 +84,11 @@ function CompareDrawer() {
 
     // Expanded Compare Drawer
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 animate-in slide-in-from-bottom duration-350">
+        <div 
+            onMouseEnter={clearAutoMinimizeTimer}
+            onMouseLeave={startAutoMinimizeTimer}
+            className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 animate-in slide-in-from-bottom duration-350"
+        >
             <div className={`max-w-4xl mx-auto border shadow-2xl rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300 ${
                 isDark 
                     ? 'border-white/10 bg-black/90 text-white backdrop-blur-md' 
@@ -106,7 +139,11 @@ function CompareDrawer() {
                 {/* Action Buttons */}
                 <div className="flex items-center gap-3 shrink-0 w-full md:w-auto justify-end">
                     <button 
-                        onClick={() => setIsExpanded(false)}
+                        onClick={() => {
+                            setIsExpanded(false);
+                            isAutoOpenedRef.current = false;
+                            clearAutoMinimizeTimer();
+                        }}
                         className={`px-3 py-2 text-xs font-bold rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer ${
                             isDark 
                                 ? 'border-white/10 text-white/85 bg-white/5 hover:bg-white/10 hover:text-white' 
@@ -119,7 +156,11 @@ function CompareDrawer() {
                     </button>
 
                     <button 
-                        onClick={clearCompare}
+                        onClick={() => {
+                            clearCompare();
+                            isAutoOpenedRef.current = false;
+                            clearAutoMinimizeTimer();
+                        }}
                         className={`px-3 py-2 text-xs font-bold rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer ${
                             isDark 
                                 ? 'border-white/10 text-white/85 bg-white/5 hover:bg-white/10 hover:text-white' 

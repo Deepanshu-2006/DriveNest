@@ -1,3 +1,4 @@
+"use client";
 import React from 'react'
 import { useUser } from '@clerk/nextjs'
 
@@ -7,26 +8,26 @@ function Footer() {
 
     return (
         <footer className={`lg:grid lg:grid-cols-5 border-t transition-all duration-500 ${isDark ? 'bg-[#0a0a0a] border-white/5 text-white' : 'bg-gray-100 border-gray-200/50'}`}>
-            {/* Left side: Premium Image Column */}
-            <div className="relative block h-64 lg:col-span-2 lg:h-full min-h-100 overflow-hidden bg-slate-950">
+            {/* Left side: Premium Image Column (Hidden on Mobile) */}
+            <div className="relative hidden lg:block lg:col-span-2 overflow-hidden bg-slate-950">
                 <img 
                     src="/footer.avif" 
                     alt="DriveNest premium car" 
-                    className="absolute inset-0 h-full w-full object-cover " 
+                    className="absolute inset-0 h-full w-full object-cover" 
                 />
                 <div className="absolute inset-0 bg-linear-to-tr from-slate-950/40 via-transparent to-transparent pointer-events-none" />
             </div>
 
             {/* Right side: Modern Brand Layout */}
-            <div className="px-6 py-16 sm:px-10 lg:col-span-3 lg:px-12 justify-between flex flex-col">
-                <div className="grid grid-cols-1 gap-12 sm:grid-cols-2">
+            <div className="px-5 py-10 sm:px-10 lg:col-span-3 lg:py-16 lg:px-12 justify-between flex flex-col">
+                <div className="grid grid-cols-1 gap-8 sm:gap-12 sm:grid-cols-2">
                     <div>
                         {/* Logo section */}
-                        <div className="flex items-center gap-3 cursor-pointer mb-8">
+                        <div className="flex items-center gap-3 cursor-pointer mb-6 sm:mb-8">
                             <img
                                 src="/logo.png"
                                 alt="Drive Nest Logo"
-                                className="h-12 w-auto object-contain rounded-e-full"
+                                className="h-10 sm:h-12 w-auto object-contain rounded-e-full"
                             />
                             <span className="bg-linear-to-r from-teal-400 to-emerald-500 bg-clip-text text-transparent text-2xl font-extrabold tracking-tight">
                                 DriveNest
@@ -34,9 +35,9 @@ function Footer() {
                         </div>
 
                         {/* Call us highlight card */}
-                        <div className={`rounded-2xl p-6 mb-8 shadow-xs border ${isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50/80 border-slate-100'}`}>
+                        <div className={`rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 shadow-xs border transition-all ${isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50/80 border-slate-100'}`}>
                             <span className="text-xs tracking-wider text-gray-400 uppercase font-bold block mb-1"> Call us </span>
-                            <a href="tel:+18001234567" className={`block text-2xl font-extrabold transition duration-200 sm:text-3xl ${isDark ? 'text-white hover:text-teal-400' : 'text-slate-800 hover:text-teal-600'}`}>
+                            <a href="tel:+18001234567" className={`block text-xl sm:text-2xl lg:text-3xl font-extrabold transition duration-200 ${isDark ? 'text-white hover:text-teal-400' : 'text-slate-800 hover:text-teal-600'}`}>
                                 +1 (800) 123-4567
                             </a>
                         </div>
@@ -52,7 +53,7 @@ function Footer() {
                             </li>
                         </ul>
 
-                        <ul className="mt-8 flex gap-5">
+                        <ul className="mt-6 sm:mt-8 flex gap-5">
                             <li>
                                 <a href="#" rel="noreferrer" target="_blank" className={`transition-all duration-200 hover:scale-110 block ${isDark ? 'text-white/40 hover:text-teal-400' : 'text-gray-400 hover:text-teal-600'}`}>
                                     <span className="sr-only">Facebook</span>
@@ -88,10 +89,10 @@ function Footer() {
                         </ul>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="grid grid-cols-2 gap-6 sm:gap-8">
                         <div>
                             <p className={`font-bold text-base ${isDark ? 'text-white' : 'text-slate-800'}`}>Services</p>
-                            <ul className="mt-6 space-y-4 text-sm font-semibold">
+                            <ul className="mt-4 sm:mt-6 space-y-3 sm:space-y-4 text-sm font-semibold">
                                 <li>
                                     <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Buy Cars </a>
                                 </li>
@@ -112,7 +113,7 @@ function Footer() {
 
                         <div>
                             <p className={`font-bold text-base ${isDark ? 'text-white' : 'text-slate-800'}`}>Company</p>
-                            <ul className="mt-6 space-y-4 text-sm font-semibold">
+                            <ul className="mt-4 sm:mt-6 space-y-3 sm:space-y-4 text-sm font-semibold">
                                 <li>
                                     <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> About Us </a>
                                 </li>
@@ -131,9 +132,9 @@ function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className={`mt-16 border-t pt-8 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+                <div className={`mt-10 sm:mt-16 border-t pt-8 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
                     <div className="sm:flex sm:items-center sm:justify-between">
-                        <ul className="flex flex-wrap gap-6 text-xs font-semibold">
+                        <ul className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold">
                             <li>
                                 <a href="#" className={`transition ${isDark ? 'text-white/40 hover:text-teal-400' : 'text-gray-400 hover:text-teal-600'}`}> Terms &amp; Conditions </a>
                             </li>
@@ -145,7 +146,7 @@ function Footer() {
                             </li>
                         </ul>
 
-                        <p className="mt-8 text-xs text-gray-400 sm:mt-0 font-medium">
+                        <p className="mt-6 sm:mt-0 text-xs text-gray-400 font-medium">
                             &copy; {new Date().getFullYear()} DriveNest. All rights reserved.
                         </p>
                     </div>

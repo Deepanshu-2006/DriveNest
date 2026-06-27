@@ -1,18 +1,19 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { UserButton, useUser } from "@clerk/nextjs";
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Link from "next/link";
-import { Menu, X, GitCompare } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { getSendbirdClient } from '@/lib/sendbird-client';
 import { getSendbirdUserId } from '@/lib/utils';
 import { UserEventHandler } from '@sendbird/chat';
 import { GroupChannelHandler } from '@sendbird/chat/groupChannel';
 import { useCompare } from '../_context/CompareContext';
 
-function Header() {
+function HeaderContent() {
     const { isSignedIn, user, isLoaded } = useUser();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { compareCars } = useCompare();
     const [isOpen, setIsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -82,8 +83,12 @@ function Header() {
 
     const isDarkHome = (pathname === '/' || pathname === '/add-listing' || pathname === '/profile' || pathname.startsWith('/listing-details') || pathname.startsWith('/search') || pathname === '/compare') && isSignedIn;
 
+    // Active link states
+    const isInboxActive = pathname === '/profile' && searchParams.get('tab') === 'inbox';
+    const isProfileActive = pathname === '/profile' && searchParams.get('tab') !== 'inbox';
+
     return (
-        <header className={isDarkHome ? "bg-black/60 border-b border-white/10 sticky top-0 z-50 shadow-xs text-white backdrop-blur-md transition-all duration-300" : "bg-white border-b border-gray-100 sticky top-0 z-50 shadow-xs transition-all duration-300"}>
+        <header className={isDarkHome ? "bg-[#050505] border-b border-white/10 sticky top-0 z-50 shadow-xs text-white transition-all duration-300" : "bg-white border-b border-gray-100 sticky top-0 z-50 shadow-xs transition-all duration-300"}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between">
                     {/* Logo */}
@@ -129,7 +134,7 @@ function Header() {
                             </li>
                             {isSignedIn && (
                                 <li>
-                                    <Link className={`transition flex items-center gap-1.5 ${pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('tab=inbox')
+                                    <Link className={`transition flex items-center gap-1.5 ${isInboxActive
                                             ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4')
                                             : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
                                         }`} href="/profile?tab=inbox">
@@ -144,7 +149,7 @@ function Header() {
                             )}
                             {isSignedIn && (
                                 <li>
-                                    <Link className={`transition ${pathname === '/profile' && (typeof window === 'undefined' || !window.location.search.includes('tab=inbox'))
+                                    <Link className={`transition ${isProfileActive
                                             ? (isDarkHome ? 'text-teal-400 font-extrabold underline decoration-2 underline-offset-4' : 'text-teal-600 font-extrabold underline decoration-2 underline-offset-4')
                                             : (isDarkHome ? 'text-white/80 hover:text-teal-400' : 'text-gray-600 hover:text-teal-600')
                                         }`} href="/profile"> Profile </Link>
@@ -206,7 +211,7 @@ function Header() {
                         </Link>
                         {isSignedIn && (
                             <>
-                                <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition flex items-center justify-between ${pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('tab=inbox') ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile?tab=inbox">
+                                <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition flex items-center justify-between ${isInboxActive ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile?tab=inbox">
                                     <span>Inbox</span>
                                     {unreadCount > 0 && (
                                         <span className="flex h-5 min-w-5 px-1.5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white">
@@ -214,7 +219,7 @@ function Header() {
                                         </span>
                                     )}
                                 </Link>
-                                <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${pathname === '/profile' && (typeof window === 'undefined' || !window.location.search.includes('tab=inbox')) ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile"> Profile </Link>
+                                <Link onClick={() => setIsOpen(false)} className={`px-3 py-2 rounded-md transition ${isProfileActive ? (isDarkHome ? 'text-teal-400 bg-white/5 font-bold' : 'text-teal-600 bg-gray-50 font-bold') : (isDarkHome ? 'text-white/80 hover:text-teal-400 hover:bg-white/5' : 'text-gray-600 hover:text-teal-600 hover:bg-gray-50')}`} href="/profile"> Profile </Link>
                             </>
                         )}
                     </nav>
@@ -246,4 +251,12 @@ function Header() {
     );
 }
 
-export default Header;
+export default function Header() {
+    return (
+        <Suspense fallback={
+            <header className="w-full bg-[#050505] border-b border-white/10 h-20 sticky top-0 z-50" />
+        }>
+            <HeaderContent />
+        </Suspense>
+    );
+}
