@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Header from '../_components/Header';
 import Footer from '../_components/Footer';
 import CarItem from '../_components/CarItem';
+import CompareDrawer from '../_components/CompareDrawer';
 import { getAllCarListings } from '@/app/actions/carListing';
 import { useUser } from '@clerk/nextjs';
 import Data from '../Shared/Data';
@@ -329,6 +330,7 @@ function SearchPage() {
       }>
         <SearchContent />
       </Suspense>
+      <CompareDrawer />
       <Footer />
     </div>
   );

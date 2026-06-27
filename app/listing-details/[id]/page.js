@@ -31,18 +31,22 @@ import {
   User, 
   Wrench,
   Hash,
-  Calculator
+  Calculator,
+  GitCompare
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import fuelImg from "@/public/fuel.png";
 import gearshiftImg from '@/public/gearshift.png';
 import speedometerImg from '@/public/speedometer.png';
+import CompareDrawer from '../../_components/CompareDrawer';
+import { useCompare } from '../../_context/CompareContext';
 
 function ListingDetails() {
   const { id } = useParams();
   const router = useRouter();
   const { isSignedIn, isLoaded, user } = useUser();
   const isDark = isLoaded && isSignedIn;
+  const { addToCompare, removeFromCompare, isInCompare } = useCompare();
 
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -272,11 +276,11 @@ function ListingDetails() {
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Back Navigation Bar */}
-        <div className="mb-6">
+        {/* Navigation Bar */}
+        <div className="mb-6 flex justify-between items-center">
           <button 
-            onClick={() => router.back()} 
-            className={`flex items-center gap-2 text-sm font-bold transition-all px-4 py-2 rounded-full border cursor-pointer ${
+            onClick={() => router.back()}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-bold border rounded-full transition-all cursor-pointer ${
               isDark 
                 ? 'border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white' 
                 : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
@@ -285,6 +289,39 @@ function ListingDetails() {
             <ArrowLeft className="w-4 h-4" />
             <span>Go Back</span>
           </button>
+
+          {listing && (
+            <button 
+              onClick={() => {
+                const mappedCar = {
+                  id: listing.id,
+                  name: listing.listingTitle,
+                  price: listing.sellingPrice,
+                  fuelType: listing.fuelType,
+                  geartype: listing.transmission,
+                  miles: listing.mileage,
+                  image: listing.images?.[0] || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600',
+                  condition: listing.condition,
+                  category: listing.category
+                };
+                if (isInCompare(listing.id)) {
+                  removeFromCompare(listing.id);
+                } else {
+                  addToCompare(mappedCar);
+                }
+              }}
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-bold border rounded-full transition-all cursor-pointer ${
+                isInCompare(listing.id)
+                  ? 'bg-teal-600 border-teal-600 text-white hover:bg-teal-700'
+                  : isDark
+                    ? 'border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white'
+                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+              }`}
+            >
+              <GitCompare className="w-4 h-4" />
+              <span>{isInCompare(listing.id) ? 'Added to Compare' : 'Add to Compare'}</span>
+            </button>
+          )}
         </div>
 
         {/* Top Header Section */}
@@ -780,6 +817,7 @@ function ListingDetails() {
         </div>
 
       </div>
+      <CompareDrawer />
       <Footer />
     </div>
   );

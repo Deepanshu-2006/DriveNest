@@ -5,16 +5,18 @@ import fuel from "@/public/fuel.png"
 import gearshift from '@/public/gearshift.png'
 import speedometer from '@/public/speedometer.png'
 import { Separator } from '@/components/ui/separator'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, GitCompare } from 'lucide-react'
 import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useCompare } from '../_context/CompareContext'
 
 
 function CarItem({ car, mode = 'view', onEdit, onDelete }) {
     const { isSignedIn } = useUser();
     const isDark = isSignedIn;
     const router = useRouter();
+    const { addToCompare, removeFromCompare, isInCompare } = useCompare();
     const detailUrl = car?.id ? `/listing-details/${car.id}` : '#';
 
     const handleCardClick = (e) => {
@@ -26,11 +28,35 @@ function CarItem({ car, mode = 'view', onEdit, onDelete }) {
         }
     };
 
+    const isCompared = car?.id ? isInCompare(car.id) : false;
+
     return (
         <div 
             onClick={handleCardClick}
             className={`relative border rounded-xl hover:scale-102 transition-all duration-200 cursor-pointer my-2 ${isDark ? 'border-white/10 bg-[#0f0f0f] text-white hover:shadow-[0_4px_30px_rgba(20,184,166,0.05)]' : 'border-gray-300 bg-white text-slate-900 hover:shadow-xl'}`}
         >
+            {car?.id && (
+                <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (isCompared) {
+                            removeFromCompare(car.id);
+                        } else {
+                            addToCompare(car);
+                        }
+                    }}
+                    className={`absolute top-3 right-3 p-2 rounded-full z-20 transition-all duration-200 hover:scale-110 shadow-md ${
+                        isCompared
+                            ? 'bg-teal-500 text-white hover:bg-teal-600'
+                            : isDark
+                                ? 'bg-black/60 text-white/80 border border-white/10 hover:bg-black/80 hover:text-white'
+                                : 'bg-white/90 text-slate-700 border border-gray-200 hover:bg-white hover:text-teal-600'
+                    }`}
+                    title={isCompared ? "Remove from Compare" : "Add to Compare"}
+                >
+                    <GitCompare className="h-4 w-4" />
+                </button>
+            )}
             <h2 className={`absolute top-3 left-3 text-white text-xs font-bold px-2 py-1 rounded-full z-10 ${
                 car?.condition === 'Used' ? 'bg-amber-600' :
                 car?.condition === 'Certified Pre-Owned' ? 'bg-teal-600' : 'bg-emerald-500'

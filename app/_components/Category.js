@@ -75,7 +75,7 @@ function Category({ selectedCategory, onCategorySelect }) {
                                 {isSelected && (
                                     <motion.div 
                                         layoutId="activeTabUnderline"
-                                        className="absolute bottom-0 left-0 right-0 h-[3px] z-10 bg-teal-500 dark:bg-teal-400 shadow-[0_-1px_12px_rgba(20,184,166,0.6)] rounded-t-full"
+                                        className="absolute bottom-0 left-0 right-0 h-0.75 z-10 bg-teal-500 dark:bg-teal-400 shadow-[0_-1px_12px_rgba(20,184,166,0.6)] rounded-t-full"
                                         transition={{ type: "spring", stiffness: 380, damping: 30 }}
                                     />
                                 )}

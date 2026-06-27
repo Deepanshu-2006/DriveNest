@@ -9,6 +9,7 @@ import MostSearchedCar from "./_components/MostSearchedCar";
 import ScrollTicker from "./_components/ScrollTicker";
 import InfoSection from "./_components/InfoSection";
 import Footer from "./_components/Footer";
+import CompareDrawer from "./_components/CompareDrawer";
 import { useUser } from '@clerk/nextjs';
 
 export default function Home() {
@@ -36,6 +37,7 @@ export default function Home() {
       <BrandTicker />
       <MostSearchedCar selectedCategory={selectedCategory} />
       <InfoSection />
+      <CompareDrawer />
       <Footer />
     </div>
   );

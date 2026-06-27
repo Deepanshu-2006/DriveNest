@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./_components/Header";
 import ToastProvider from "./_components/ToastProvider";
+import { CompareProvider } from "./_context/CompareContext";
 import {
   ClerkProvider,
   UserButton,
@@ -28,10 +29,12 @@ export default function RootLayout({ children }) {
       {/* Add overflow-x-hidden here */}
       <body className="min-h-full flex flex-col overflow-x-hidden">
         <ClerkProvider>
-          <main className="flex-1">
-            {children}
-          </main>
-          <ToastProvider />
+          <CompareProvider>
+            <main className="flex-1">
+              {children}
+            </main>
+            <ToastProvider />
+          </CompareProvider>
         </ClerkProvider>
       </body>
     </html>
