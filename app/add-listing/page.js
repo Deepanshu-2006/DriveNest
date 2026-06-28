@@ -14,7 +14,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createCarListing, getCarListingById, updateCarListing } from '@/app/actions/carListing'
 import LivePreviewCard from './components/LivePreviewCard'
 import { Eye } from 'lucide-react'
-import { toast } from 'react-toastify'
+import { showSuccessToast, showErrorToast, showWarningToast } from '../_components/drive-toast'
 
 function AddListingContent() {
     const [formData, setFormData] = useState({});
@@ -62,7 +62,7 @@ function AddListingContent() {
         e.preventDefault();
 
         if (!formData.images || formData.images.length === 0) {
-            alert("Please upload at least one image before submitting.");
+            showWarningToast("Images required", "Please upload at least one image before submitting.");
             return;
         }
 
@@ -100,14 +100,17 @@ function AddListingContent() {
                 response = await createCarListing(submissionData);
             }
             if (response.success) {
-                toast.success(mode === 'edit' ? "Listing updated successfully!" : "Listing created successfully!");
+                showSuccessToast(
+                    mode === 'edit' ? "Listing updated" : "Listing created",
+                    mode === 'edit' ? "Your vehicle listing has been updated successfully." : "Your vehicle has been listed successfully."
+                );
                 router.push('/profile');
             } else {
-                toast.error("Failed to submit listing: " + response.error);
+                showErrorToast("Failed to submit listing", response.error || "Please check your inputs and try again.");
             }
         } catch (error) {
             console.error("Error submitting form:", error);
-            toast.error("An error occurred. Please try again.");
+            showErrorToast("Submission error", "An error occurred. Please try again.");
         } finally {
             setLoading(false);
         }
