@@ -19,8 +19,12 @@ function Footer() {
             </div>
 
             {/* Right side: Modern Brand Layout */}
-            <div className="px-5 py-10 sm:px-10 lg:col-span-3 lg:py-16 lg:px-12 justify-between flex flex-col">
-                <div className="grid grid-cols-1 gap-8 sm:gap-12 sm:grid-cols-2">
+            <div className={`px-5 py-10 sm:px-10 lg:col-span-3 lg:py-16 lg:px-12 justify-between flex flex-col relative overflow-hidden ${
+                isDark 
+                    ? 'bg-[radial-gradient(rgba(20,184,166,0.06)_1px,transparent_1px)] bg-size-[20px_20px]' 
+                    : 'bg-[radial-gradient(rgba(20,184,166,0.03)_1px,transparent_1px)] bg-size-[20px_20px]'
+            }`}>
+                <div className="relative z-10 grid grid-cols-1 gap-8 sm:gap-12 sm:grid-cols-2">
                     <div>
                         {/* Logo section */}
                         <div className="flex items-center gap-3 cursor-pointer mb-6 sm:mb-8">
@@ -94,19 +98,19 @@ function Footer() {
                             <p className={`font-bold text-base ${isDark ? 'text-white' : 'text-slate-800'}`}>Services</p>
                             <ul className="mt-4 sm:mt-6 space-y-3 sm:space-y-4 text-sm font-semibold">
                                 <li>
-                                    <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Buy Cars </a>
+                                    <a href="#" className={`transition duration-300 hover:translate-x-1.5 block w-fit ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Buy Cars </a>
                                 </li>
                                 <li>
-                                    <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Sell Cars </a>
+                                    <a href="#" className={`transition duration-300 hover:translate-x-1.5 block w-fit ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Sell Cars </a>
                                 </li>
                                 <li>
-                                    <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Car Valuation </a>
+                                    <a href="#" className={`transition duration-300 hover:translate-x-1.5 block w-fit ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Car Valuation </a>
                                 </li>
                                 <li>
-                                    <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Car Loans </a>
+                                    <a href="#" className={`transition duration-300 hover:translate-x-1.5 block w-fit ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Car Loans </a>
                                 </li>
                                 <li>
-                                    <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Insurance </a>
+                                    <a href="#" className={`transition duration-300 hover:translate-x-1.5 block w-fit ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Insurance </a>
                                 </li>
                             </ul>
                         </div>
@@ -115,16 +119,16 @@ function Footer() {
                             <p className={`font-bold text-base ${isDark ? 'text-white' : 'text-slate-800'}`}>Company</p>
                             <ul className="mt-4 sm:mt-6 space-y-3 sm:space-y-4 text-sm font-semibold">
                                 <li>
-                                    <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> About Us </a>
+                                    <a href="#" className={`transition duration-300 hover:translate-x-1.5 block w-fit ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> About Us </a>
                                 </li>
                                 <li>
-                                    <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Meet the Team </a>
+                                    <a href="#" className={`transition duration-300 hover:translate-x-1.5 block w-fit ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Meet the Team </a>
                                 </li>
                                 <li>
-                                    <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Careers </a>
+                                    <a href="#" className={`transition duration-300 hover:translate-x-1.5 block w-fit ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Careers </a>
                                 </li>
                                 <li>
-                                    <a href="#" className={`transition-all duration-200 hover:pl-1 block ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Contact Us </a>
+                                    <a href="#" className={`transition duration-300 hover:translate-x-1.5 block w-fit ${isDark ? 'text-white/60 hover:text-teal-400' : 'text-gray-500 hover:text-teal-600'}`}> Contact Us </a>
                                 </li>
                             </ul>
                         </div>
@@ -132,7 +136,7 @@ function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className={`mt-10 sm:mt-16 border-t pt-8 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
+                <div className={`mt-10 sm:mt-16 border-t pt-8 relative z-10 ${isDark ? 'border-white/10' : 'border-gray-100'}`}>
                     <div className="sm:flex sm:items-center sm:justify-between">
                         <ul className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold">
                             <li>

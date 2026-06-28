@@ -10,6 +10,7 @@ import { getSendbirdUserId } from '@/lib/utils';
 import { UserEventHandler } from '@sendbird/chat';
 import { GroupChannelHandler } from '@sendbird/chat/groupChannel';
 import { useCompare } from '../_context/CompareContext';
+import SpotlightSearchModal from './SpotlightSearchModal';
 
 function HeaderContent() {
     const { isSignedIn, user, isLoaded } = useUser();
@@ -105,7 +106,7 @@ function HeaderContent() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav aria-label="Global" className={`hidden md:flex items-center gap-8 font-semibold text-[16px] ${isDarkHome ? 'text-white/85' : 'text-gray-600'}`}>
+                    <nav aria-label="Global" className={`hidden md:flex items-center gap-8 font-medium text-sm tracking-wide ${isDarkHome ? 'text-white/80' : 'text-gray-600'}`}>
                         <ul className="flex items-center gap-8">
                             <li>
                                 <Link className={`transition ${pathname === '/'
@@ -160,7 +161,8 @@ function HeaderContent() {
                     </nav>
 
                     {/* Right action buttons */}
-                    <div className="hidden md:flex items-center gap-4">
+                    <div className="hidden md:flex items-center gap-6">
+                        <SpotlightSearchModal />
                         {isSignedIn ? (
                             <div className="flex items-center gap-4">
                                 <Link
@@ -182,7 +184,7 @@ function HeaderContent() {
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="flex items-center md:hidden gap-4">
+                    <div className="flex items-center md:hidden gap-3">
                         {isSignedIn && <UserButton afterSignOutUrl="/" />}
                         <button
                             onClick={() => setIsOpen(!isOpen)}

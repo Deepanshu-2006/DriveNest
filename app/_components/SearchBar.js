@@ -11,7 +11,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from './ui/Select';
-
 function SearchBar() {
     const [condition, setCondition] = useState('');
     const [make, setMake] = useState('');
@@ -49,6 +48,7 @@ function SearchBar() {
 
     return (
         <div className='flex justify-center mt-10 '>
+            <div className="w-full max-w-5xl">
             <div className={`flex justify-center rounded-md py-3 md:rounded-full flex-col md:flex md:flex-row gap-8 px-10 items-center border transition-all duration-300 ${containerClasses}`}>
 
                 {/* Dropdown 1: Cars */}
@@ -113,6 +113,7 @@ function SearchBar() {
                     </svg>
                 </button>
 
+            </div>
             </div>
         </div>
     );

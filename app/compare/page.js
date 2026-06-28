@@ -58,8 +58,6 @@ function CompareContent() {
 
   // Best Value highlighting states
   const [bestPriceId, setBestPriceId] = useState(null);
-  const [bestMileageId, setBestMileageId] = useState(null);
-  const [lowestEmiId, setLowestEmiId] = useState(null);
 
   // 1. Initial Load: Sync state from URL query parameters (?ids=1,2,3)
   useEffect(() => {
@@ -149,33 +147,24 @@ function CompareContent() {
     }
   }, [compareCars, isContextLoaded]);
 
-  // 4. Calculate Best Price and Best Mileage dynamic values
+  // 4. Calculate best price badge value
   useEffect(() => {
     if (detailedCars.length > 1) {
       let minPrice = Infinity;
       let bestPId = null;
-      let minMileage = Infinity;
-      let bestMId = null;
 
       detailedCars.forEach(car => {
         const price = parseFloat(car.sellingPrice);
-        const mileage = parseFloat(car.mileage);
         
         if (!isNaN(price) && price < minPrice) {
           minPrice = price;
           bestPId = car.id;
         }
-        if (!isNaN(mileage) && mileage < minMileage) {
-          minMileage = mileage;
-          bestMId = car.id;
-        }
       });
 
       setBestPriceId(bestPId);
-      setBestMileageId(bestMId);
     } else {
       setBestPriceId(null);
-      setBestMileageId(null);
     }
   }, [detailedCars]);
 
@@ -216,58 +205,78 @@ function CompareContent() {
     return Math.round(emi);
   };
 
-  // Track dynamic Best Financing Payment value
-  useEffect(() => {
-    if (detailedCars.length > 1) {
-      let minEmi = Infinity;
-      let bestEId = null;
+  const extractComparableNumber = (value) => {
+    if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+    if (typeof value !== 'string') return null;
 
-      detailedCars.forEach(car => {
-        const emi = calculateEMI(car.sellingPrice);
-        if (emi > 0 && emi < minEmi) {
-          minEmi = emi;
-          bestEId = car.id;
-        }
-      });
-      setLowestEmiId(bestEId);
-    } else {
-      setLowestEmiId(null);
+    const normalized = value.replace(/,/g, '').trim();
+    if (!normalized) return null;
+
+    const match = normalized.match(/-?\d+(\.\d+)?/);
+    if (!match) return null;
+
+    const parsed = parseFloat(match[0]);
+    return Number.isFinite(parsed) ? parsed : null;
+  };
+
+  const getComparisonMeta = ({ better = 'min', getValue }) => {
+    if (detailedCars.length <= 1) return null;
+
+    const comparableEntries = detailedCars
+      .map(car => ({ id: car.id, value: getValue(car) }))
+      .filter(entry => entry.value !== null && Number.isFinite(entry.value));
+
+    if (comparableEntries.length <= 1) return null;
+
+    const values = comparableEntries.map(entry => entry.value);
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+
+    if (minValue === maxValue) return null;
+
+    const bestValue = better === 'max' ? maxValue : minValue;
+    const worstValue = better === 'max' ? minValue : maxValue;
+
+    return {
+      bestIds: comparableEntries.filter(entry => entry.value === bestValue).map(entry => entry.id),
+      worstIds: comparableEntries.filter(entry => entry.value === worstValue).map(entry => entry.id),
+    };
+  };
+
+  const getCellTone = (comparisonMeta, carId) => {
+    if (!comparisonMeta) return null;
+    if (comparisonMeta.bestIds.includes(carId)) return 'best';
+    if (comparisonMeta.worstIds.includes(carId)) return 'worst';
+    return null;
+  };
+
+  const getToneClasses = (tone) => {
+    if (tone === 'best') {
+      return 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-500/20';
     }
-  }, [detailedCars, downPayment, interestRate, loanTerm]);
-
-  // Calculate specific car spec rank
-  const getRank = (carId, key) => {
-    if (!key || detailedCars.length <= 1) return null;
-
-    const sorted = [...detailedCars]
-      .map(car => {
-        let val = parseFloat(car[key]);
-        if (isNaN(val)) val = key === 'year' ? 0 : Infinity;
-        return { id: car.id, value: val };
-      })
-      .sort((a, b) => {
-        if (key === 'year') {
-          return b.value - a.value; // Newer is better (descending)
-        } else {
-          return a.value - b.value; // Lower is better (Price, Mileage) (ascending)
-        }
-      });
-
-    const index = sorted.findIndex(item => item.id === carId);
-    if (index === 0) {
-      let customLabel = "1st";
-      if (key === 'sellingPrice') customLabel = "Best Price";
-      if (key === 'mileage') customLabel = "Low Miles";
-      if (key === 'year') customLabel = "Newest";
-
-      return { 
-        label: customLabel, 
-        icon: "🏆", 
-        color: "text-amber-700 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-500/20 border-amber-500/30 dark:border-amber-500/20 shadow-xs" 
-      };
+    if (tone === 'worst') {
+      return 'bg-rose-500/8 text-rose-700 dark:text-rose-200 ring-1 ring-inset ring-rose-500/14';
     }
-    if (index === 1) return { label: "2nd", icon: "🥈", color: "text-slate-600 dark:text-slate-300 bg-slate-500/10 dark:bg-slate-400/15 border-slate-500/30 dark:border-slate-400/20 shadow-xs" };
-    if (index === 2) return { label: "3rd", icon: "🥉", color: "text-amber-850 dark:text-amber-500 bg-amber-700/10 dark:bg-amber-700/15 border-amber-700/30 dark:border-amber-700/20 shadow-xs" };
+    return 'text-slate-900 dark:text-white';
+  };
+
+  const renderMetricBadge = (tone, bestLabel, worstLabel) => {
+    if (tone === 'best') {
+      return (
+        <span className="inline-flex items-center rounded-full bg-emerald-500/12 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">
+          {bestLabel}
+        </span>
+      );
+    }
+
+    if (tone === 'worst') {
+      return (
+        <span className="inline-flex items-center rounded-full bg-rose-500/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.18em] text-rose-700 dark:text-rose-200">
+          {worstLabel}
+        </span>
+      );
+    }
+
     return null;
   };
 
@@ -292,6 +301,11 @@ function CompareContent() {
   const filteredFeatures = featuresData.features.filter(f => 
     f.label.toLowerCase().includes(featureSearch.toLowerCase())
   );
+
+  const emiComparisonMeta = getComparisonMeta({
+    better: 'min',
+    getValue: (car) => calculateEMI(car.sellingPrice),
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
@@ -472,15 +486,35 @@ function CompareContent() {
               </tr>
               
               {!collapsed.general && [
-                { label: 'Selling Price', key: 'sellingPrice', sortKey: 'sellingPrice', format: (val) => val ? `$${parseFloat(val).toLocaleString()}` : 'N/A' },
+                {
+                  label: 'Selling Price',
+                  key: 'sellingPrice',
+                  format: (val) => val ? `$${parseFloat(val).toLocaleString()}` : 'N/A',
+                  comparison: {
+                    better: 'min',
+                    getValue: (car) => extractComparableNumber(car.sellingPrice),
+                    bestLabel: 'Best Price',
+                    worstLabel: 'Highest Price',
+                  }
+                },
                 { label: 'Original Price', key: 'originalPrice', format: (val) => val ? `$${parseFloat(val).toLocaleString()}` : 'N/A' },
                 { label: 'Make', key: 'make' },
                 { label: 'Model', key: 'model' },
-                { label: 'Year', key: 'year', sortKey: 'year' },
+                {
+                  label: 'Year',
+                  key: 'year',
+                  comparison: {
+                    better: 'max',
+                    getValue: (car) => extractComparableNumber(car.year),
+                    bestLabel: 'Newest',
+                    worstLabel: 'Oldest',
+                  }
+                },
                 { label: 'Category', key: 'category' }
               ].map((spec, index) => {
                 const isDifferent = checkIsDifferent(spec.key);
                 const shouldHighlight = highlightDiff && isDifferent;
+                const comparisonMeta = spec.comparison ? getComparisonMeta(spec.comparison) : null;
                 return (
                   <tr key={index} className={`border-b border-slate-100 dark:border-white/5 transition-colors ${
                     shouldHighlight ? 'bg-amber-500/10 dark:bg-amber-500/5' : 'hover:bg-slate-50/20 dark:hover:bg-white/5'
@@ -488,22 +522,16 @@ function CompareContent() {
                     <td className="p-4 pl-6 text-xs font-bold text-slate-500 dark:text-white/60">
                       {renderSpecLabel(spec.label)}
                     </td>
-                    {detailedCars.map((car) => (
+                    {detailedCars.map((car) => {
+                      const tone = getCellTone(comparisonMeta, car.id);
+                      return (
                       <td key={car.id} className="p-4 border-l border-slate-200 dark:border-white/10 text-xs font-extrabold">
-                        <div className="flex items-center justify-between gap-1.5">
+                        <div className={`flex items-center justify-between gap-2 rounded-xl px-3 py-2 transition-colors ${getToneClasses(tone)}`}>
                           <span>{spec.format ? spec.format(car[spec.key]) : (car[spec.key] || 'N/A')}</span>
-                          {spec.sortKey && detailedCars.length > 1 && (() => {
-                            const rank = getRank(car.id, spec.sortKey);
-                            return rank ? (
-                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[9px] font-black tracking-wider select-none uppercase shadow-xs ${rank.color}`}>
-                                <span className="text-[10px]">{rank.icon}</span>
-                                <span>{rank.label}</span>
-                              </span>
-                            ) : null;
-                          })()}
+                          {spec.comparison ? renderMetricBadge(tone, spec.comparison.bestLabel, spec.comparison.worstLabel) : null}
                         </div>
                       </td>
-                    ))}
+                    )})}
                     {Array.from({ length: 3 - detailedCars.length }).map((_, i) => (
                       <td key={`empty-gen-${i}`} className="p-4 border-l border-slate-200 dark:border-white/10 text-xs text-slate-300 dark:text-white/10 text-center">-</td>
                     ))}
@@ -526,17 +554,43 @@ function CompareContent() {
                 { 
                   label: 'Mileage', 
                   key: 'mileage', 
-                  sortKey: 'mileage',
-                  format: (val) => `${parseFloat(val).toLocaleString()} miles`
+                  format: (val) => `${parseFloat(val).toLocaleString()} miles`,
+                  comparison: {
+                    better: 'min',
+                    getValue: (car) => extractComparableNumber(car.mileage),
+                    bestLabel: 'Lowest Miles',
+                    worstLabel: 'Highest Miles',
+                  }
                 },
                 { label: 'Transmission', key: 'transmission' },
                 { label: 'Fuel Type', key: 'fuelType' },
-                { label: 'Engine', key: 'engine', format: (val) => val || 'N/A' },
-                { label: 'Cylinders', key: 'cylinder', format: (val) => val || 'N/A' },
+                {
+                  label: 'Engine',
+                  key: 'engine',
+                  format: (val) => val || 'N/A',
+                  comparison: {
+                    better: 'max',
+                    getValue: (car) => extractComparableNumber(car.engine),
+                    bestLabel: 'Largest',
+                    worstLabel: 'Smallest',
+                  }
+                },
+                {
+                  label: 'Cylinders',
+                  key: 'cylinder',
+                  format: (val) => val || 'N/A',
+                  comparison: {
+                    better: 'max',
+                    getValue: (car) => extractComparableNumber(car.cylinder),
+                    bestLabel: 'Most Cyl',
+                    worstLabel: 'Fewest Cyl',
+                  }
+                },
                 { label: 'Drive Type', key: 'driveType', format: (val) => val || 'N/A' }
               ].map((spec, index) => {
                 const isDifferent = checkIsDifferent(spec.key);
                 const shouldHighlight = highlightDiff && isDifferent;
+                const comparisonMeta = spec.comparison ? getComparisonMeta(spec.comparison) : null;
                 return (
                   <tr key={index} className={`border-b border-slate-100 dark:border-white/5 transition-colors ${
                     shouldHighlight ? 'bg-amber-500/10 dark:bg-amber-500/5' : 'hover:bg-slate-50/20 dark:hover:bg-white/5'
@@ -544,22 +598,16 @@ function CompareContent() {
                     <td className="p-4 pl-6 text-xs font-bold text-slate-500 dark:text-white/60">
                       {renderSpecLabel(spec.label)}
                     </td>
-                    {detailedCars.map((car) => (
+                    {detailedCars.map((car) => {
+                      const tone = getCellTone(comparisonMeta, car.id);
+                      return (
                       <td key={car.id} className="p-4 border-l border-slate-200 dark:border-white/10 text-xs font-extrabold">
-                        <div className="flex items-center justify-between gap-1.5">
+                        <div className={`flex items-center justify-between gap-2 rounded-xl px-3 py-2 transition-colors ${getToneClasses(tone)}`}>
                           <span>{spec.format ? spec.format(car[spec.key]) : (car[spec.key] || 'N/A')}</span>
-                          {spec.sortKey && detailedCars.length > 1 && (() => {
-                            const rank = getRank(car.id, spec.sortKey);
-                            return rank ? (
-                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[9px] font-black tracking-wider select-none uppercase shadow-xs ${rank.color}`}>
-                                <span className="text-[10px]">{rank.icon}</span>
-                                <span>{rank.label}</span>
-                              </span>
-                            ) : null;
-                          })()}
+                          {spec.comparison ? renderMetricBadge(tone, spec.comparison.bestLabel, spec.comparison.worstLabel) : null}
                         </div>
                       </td>
-                    ))}
+                    )})}
                     {Array.from({ length: 3 - detailedCars.length }).map((_, i) => (
                       <td key={`empty-perf-${i}`} className="p-4 border-l border-slate-200 dark:border-white/10 text-xs text-slate-300 dark:text-white/10 text-center">-</td>
                     ))}
@@ -679,15 +727,12 @@ function CompareContent() {
                     </td>
                     {detailedCars.map((car) => {
                       const emi = calculateEMI(car.sellingPrice);
+                      const tone = getCellTone(emiComparisonMeta, car.id);
                       return (
-                        <td key={car.id} className="p-4 border-l border-slate-200 dark:border-white/10 text-sm font-black text-teal-500">
-                          <div className="flex items-center gap-1.5">
+                        <td key={car.id} className="p-4 border-l border-slate-200 dark:border-white/10 text-sm font-black">
+                          <div className={`flex items-center justify-between gap-2 rounded-xl px-3 py-2 ${getToneClasses(tone)}`}>
                             <span>${emi.toLocaleString()} / mo</span>
-                            {lowestEmiId === car.id && (
-                              <span className="inline-flex items-center gap-0.5 bg-linear-to-r from-emerald-500/20 to-teal-500/10 dark:from-emerald-500/10 dark:to-teal-500/5 text-emerald-600 dark:text-emerald-400 text-[9px] uppercase tracking-wider font-black px-2 py-0.5 rounded-full border border-emerald-500/30 dark:border-emerald-500/25 shadow-xs">
-                                🏆 Best Rate
-                              </span>
-                            )}
+                            {renderMetricBadge(tone, 'Best EMI', 'Highest EMI')}
                           </div>
                         </td>
                       );

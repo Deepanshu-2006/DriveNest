@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import { showInfoToast, showSuccessToast, showWarningToast } from '../_components/drive-toast';
 
 const CompareContext = createContext();
 
@@ -33,26 +33,21 @@ export function CompareProvider({ children }) {
         
         // Check if already in comparison
         if (compareCars.some(item => item.id === car.id)) {
-            toast.info(`${car.name || 'This car'} is already in your comparison list.`);
+            showInfoToast('Already in compare', `${car.name || 'This car'} is already in your comparison list.`);
             return;
         }
 
         // Limit to 3 cars
         if (compareCars.length >= 3) {
-            toast.warning("You can compare a maximum of 3 cars. Remove a car to add another.");
+            showWarningToast('Compare limit reached', 'You can compare up to 3 cars at a time. Remove one to add another.');
             return;
         }
 
         setCompareCars(prev => [...prev, car]);
-        toast.success(`${car.name || 'Car'} added to comparison!`);
     };
 
     const removeFromCompare = (carId) => {
-        const targetCar = compareCars.find(item => item.id === carId);
         setCompareCars(prev => prev.filter(item => item.id !== carId));
-        if (targetCar) {
-            toast.success(`${targetCar.name || 'Car'} removed from comparison.`);
-        }
     };
 
     const isInCompare = (carId) => {
@@ -61,7 +56,6 @@ export function CompareProvider({ children }) {
 
     const clearCompare = () => {
         setCompareCars([]);
-        toast.info("Comparison list cleared.");
     };
 
     const setCompareList = (cars) => {

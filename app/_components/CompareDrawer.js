@@ -37,7 +37,18 @@ function CompareDrawer() {
     // Initial sync on mount
     useEffect(() => {
         prevLength.current = compareCars.length;
-        return () => clearAutoMinimizeTimer();
+        const openDrawer = () => {
+            isAutoOpenedRef.current = false;
+            setIsExpanded(true);
+            clearAutoMinimizeTimer();
+        };
+
+        window.addEventListener('drivenest:open-compare-drawer', openDrawer);
+
+        return () => {
+            window.removeEventListener('drivenest:open-compare-drawer', openDrawer);
+            clearAutoMinimizeTimer();
+        };
     }, []);
 
     // Auto expand only when a new car is added to the list

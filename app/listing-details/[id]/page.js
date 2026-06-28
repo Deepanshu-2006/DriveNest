@@ -17,6 +17,7 @@ import {
   CheckCircle2, 
   ChevronLeft, 
   ChevronRight, 
+  Expand,
   ExternalLink, 
   Fuel, 
   Gauge, 
@@ -32,14 +33,17 @@ import {
   Wrench,
   Hash,
   Calculator,
-  GitCompare
+  GitCompare,
+  X,
+  ZoomIn,
+  ZoomOut
 } from 'lucide-react';
-import { toast } from 'react-toastify';
 import fuelImg from "@/public/fuel.png";
 import gearshiftImg from '@/public/gearshift.png';
 import speedometerImg from '@/public/speedometer.png';
 import CompareDrawer from '../../_components/CompareDrawer';
 import { useCompare } from '../../_context/CompareContext';
+import { showErrorToast, showInfoToast, showSuccessToast } from '../../_components/drive-toast';
 
 function ListingDetails() {
   const { id } = useParams();
@@ -51,6 +55,8 @@ function ListingDetails() {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
   const [message, setMessage] = useState('');
   const [sendingMsg, setSendingMsg] = useState(false);
 
@@ -95,7 +101,7 @@ function ListingDetails() {
       }
     } catch (error) {
       console.error("Error loading listing details:", error);
-      toast.error("Failed to load listing details.");
+      showErrorToast('Unable to load listing', 'Please refresh and try again.');
     } finally {
       setLoading(false);
     }
@@ -103,23 +109,66 @@ function ListingDetails() {
 
   const handlePrevImage = () => {
     if (!listing?.images || listing.images.length <= 1) return;
+    setIsZoomed(false);
     setActiveImageIndex(prev => (prev === 0 ? listing.images.length - 1 : prev - 1));
   };
 
   const handleNextImage = () => {
     if (!listing?.images || listing.images.length <= 1) return;
+    setIsZoomed(false);
     setActiveImageIndex(prev => (prev === listing.images.length - 1 ? 0 : prev + 1));
   };
+
+  const openLightbox = (index = activeImageIndex) => {
+    setActiveImageIndex(index);
+    setIsZoomed(false);
+    setIsLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setIsLightboxOpen(false);
+    setIsZoomed(false);
+  };
+
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        closeLightbox();
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        handlePrevImage();
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        handleNextImage();
+      }
+      if (event.key.toLowerCase() === 'z') {
+        event.preventDefault();
+        setIsZoomed((prev) => !prev);
+      }
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isLightboxOpen, listing?.images?.length]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!isSignedIn) {
-      toast.info("Please sign in to contact the seller.");
+      showInfoToast('Sign in required', 'Please sign in to contact the seller.');
       router.push('/sign-in');
       return;
     }
     if (!message.trim()) {
-      toast.error("Please enter a message before sending.");
+      showErrorToast('Message is empty', 'Enter a quick note before sending it to the seller.');
       return;
     }
 
@@ -127,12 +176,12 @@ function ListingDetails() {
     const sellerEmail = listing?.user?.email;
 
     if (!buyerEmail || !sellerEmail) {
-      toast.error("Unable to identify the buyer or seller. Please try again.");
+      showErrorToast('Missing account details', 'We could not identify the buyer or seller. Please try again.');
       return;
     }
 
     if (buyerEmail === sellerEmail) {
-      toast.error("You cannot chat with yourself (you are the seller of this vehicle).");
+      showErrorToast('Seller match detected', 'You cannot start a chat on your own listing.');
       return;
     }
 
@@ -186,14 +235,25 @@ function ListingDetails() {
           .onFailed((err) => reject(err));
       });
 
-      toast.success("Message sent to seller! Redirecting to Inbox...");
+      showSuccessToast(
+        'Message sent to seller',
+        'Your conversation is ready. Opening Inbox now.',
+        {
+          actions: [
+            {
+              label: 'Open Inbox',
+              onClick: () => router.push(`/profile?tab=inbox&channelUrl=${encodeURIComponent(channel.url)}`),
+            },
+          ],
+        }
+      );
       setMessage('');
       
       // 5. Redirect to inbox with selected channel
       router.push(`/profile?tab=inbox&channelUrl=${encodeURIComponent(channel.url)}`);
     } catch (error) {
       console.error("Error sending message via Sendbird:", error);
-      toast.error("Failed to send message: " + error.message);
+      showErrorToast('Message failed', error.message || 'Please try sending your message again.');
     } finally {
       setSendingMsg(false);
     }
@@ -378,11 +438,29 @@ function ListingDetails() {
               <div className="relative w-full aspect-video rounded-2xl bg-black overflow-hidden flex items-center justify-center group">
                 {listing.images && listing.images.length > 0 ? (
                   <>
-                    <img 
-                      src={listing.images[activeImageIndex]} 
-                      alt={`Car Visual ${activeImageIndex + 1}`} 
-                      className="w-full h-full object-cover select-none transition-transform duration-300"
-                    />
+                    <button
+                      onClick={() => openLightbox(activeImageIndex)}
+                      className="absolute inset-0 cursor-zoom-in"
+                      aria-label="Open full-screen gallery"
+                    >
+                      <img 
+                        src={listing.images[activeImageIndex]} 
+                        alt={`Car Visual ${activeImageIndex + 1}`} 
+                        className="w-full h-full object-cover select-none transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    </button>
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 via-black/15 to-transparent px-5 py-5">
+                      <div className="flex items-end justify-between gap-4">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-300">Luxury Gallery</p>
+                          <p className="mt-1 text-sm font-semibold text-white/78">Tap to inspect details in full-screen spotlight mode.</p>
+                        </div>
+                        <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-black/35 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-white">
+                          <Expand className="h-3.5 w-3.5 text-teal-300" />
+                          {activeImageIndex + 1} / {listing.images.length}
+                        </span>
+                      </div>
+                    </div>
                     {listing.images.length > 1 && (
                       <>
                         <button 
@@ -420,6 +498,11 @@ function ListingDetails() {
                       }`}
                     >
                       <img src={img} className="w-full h-full object-cover" alt="" />
+                      {activeImageIndex === idx && (
+                        <span className="absolute inset-x-2 bottom-2 rounded-full bg-black/60 px-2 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-white">
+                          Active
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -781,6 +864,37 @@ function ListingDetails() {
               
               <form onSubmit={handleSendMessage} className="space-y-4">
                 <div>
+                  {/* Suggested Quick-Reply Chips */}
+                  <div className="flex flex-wrap gap-1.5 mb-2.5">
+                    {[
+                      "Is price negotiable?",
+                      "Test drive available?",
+                      "Has a clean title?",
+                      "Any past accidents?"
+                    ].map((chip) => {
+                      const mapText = {
+                        "Is price negotiable?": "Hi! Is the price for this vehicle negotiable?",
+                        "Test drive available?": "Hi! Is a test drive available for this vehicle?",
+                        "Has a clean title?": "Hi! Can you confirm if this vehicle has a clean title?",
+                        "Any past accidents?": "Hi! Has this vehicle had any past accidents or damage history?"
+                      };
+                      return (
+                        <button
+                          key={chip}
+                          type="button"
+                          onClick={() => setMessage(mapText[chip])}
+                          className={`px-3 py-1 rounded-full text-[10px] font-bold border transition cursor-pointer select-none ${
+                            isDark 
+                              ? 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white hover:border-teal-500/30' 
+                              : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:border-teal-500/30'
+                          }`}
+                        >
+                          {chip}
+                        </button>
+                      );
+                    })}
+                  </div>
+
                   <textarea 
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -817,6 +931,92 @@ function ListingDetails() {
         </div>
 
       </div>
+
+      {isLightboxOpen && listing?.images?.length > 0 && (
+        <div
+          className="fixed inset-0 z-130 bg-black/92 backdrop-blur-xl"
+          onClick={closeLightbox}
+        >
+          <div className="flex h-full flex-col px-4 py-4 sm:px-6 sm:py-6" onClick={(event) => event.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-teal-300">Brochure View</p>
+                <h3 className="mt-1 text-lg font-black text-white">{listing.listingTitle}</h3>
+                <p className="mt-1 text-xs text-white/45">Arrow keys navigate. Press Z to zoom. Esc closes.</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsZoomed((prev) => !prev)}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-white hover:bg-white/10"
+                >
+                  {isZoomed ? <ZoomOut className="h-4 w-4 text-teal-300" /> : <ZoomIn className="h-4 w-4 text-teal-300" />}
+                  {isZoomed ? 'Zoom Out' : 'Zoom In'}
+                </button>
+                <button
+                  onClick={closeLightbox}
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/6 text-white hover:bg-white/10"
+                  aria-label="Close gallery"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-[30px] border border-white/8 bg-white/3">
+              <img
+                src={listing.images[activeImageIndex]}
+                alt={`Gallery preview ${activeImageIndex + 1}`}
+                onClick={() => setIsZoomed((prev) => !prev)}
+                className={`max-h-full max-w-full select-none object-contain transition-transform duration-300 ${isZoomed ? 'scale-[1.85] cursor-zoom-out' : 'scale-100 cursor-zoom-in'}`}
+              />
+
+              {listing.images.length > 1 && (
+                <>
+                  <button
+                    onClick={handlePrevImage}
+                    className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/10 bg-black/45 p-3 text-white transition hover:bg-teal-600"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={handleNextImage}
+                    className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/10 bg-black/45 p-3 text-white transition hover:bg-teal-600"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
+              )}
+
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-white/10 bg-black/45 px-4 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-white">
+                Frame {activeImageIndex + 1} of {listing.images.length}
+              </div>
+            </div>
+
+            {listing.images.length > 1 && (
+              <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
+                {listing.images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setActiveImageIndex(idx);
+                      setIsZoomed(false);
+                    }}
+                    className={`relative h-20 w-32 shrink-0 overflow-hidden rounded-2xl border-2 transition ${
+                      activeImageIndex === idx
+                        ? 'border-teal-400 shadow-[0_16px_40px_rgba(20,184,166,0.2)]'
+                        : 'border-white/10 opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    <img src={img} alt={`Thumbnail ${idx + 1}`} className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       <CompareDrawer />
       <Footer />
     </div>

@@ -47,8 +47,10 @@ function SearchContent() {
     const urlCondition = searchParams.get('condition');
     const urlMake = searchParams.get('make');
     const urlPrice = searchParams.get('price');
+    const urlQuery = searchParams.get('q');
 
-    if (urlCategory) setCategory(urlCategory);
+    setTextSearch(urlQuery || '');
+    setCategory(urlCategory || '');
     if (urlCondition) {
       // Map 'preowned' query value to 'Certified Pre-Owned'
       if (urlCondition.toLowerCase() === 'preowned') {
@@ -56,9 +58,11 @@ function SearchContent() {
       } else {
         setCondition(urlCondition);
       }
+    } else {
+      setCondition('');
     }
-    if (urlMake) setMake(urlMake);
-    if (urlPrice) setMaxPrice(urlPrice);
+    setMake(urlMake || '');
+    setMaxPrice(urlPrice || '');
 
     fetchAllListings();
   }, [searchParams]);

@@ -43,6 +43,11 @@ function Hero() {
     const beatABlurVal = useTransform(scrollProgress, [0.0, 0.05, 0.17, 0.22], [14, 0, 0, 14]);
     const beatABlur = useTransform(beatABlurVal, (v) => `blur(${v}px)`);
 
+    // Dynamic tracking stretch values
+    const beatATracking = useTransform(scrollProgress, [0.0, 0.05, 0.17, 0.22], ["0.1em", "0.22em", "0.22em", "0.1em"]);
+    const beatBTracking = useTransform(scrollProgress, [0.23, 0.29, 0.42, 0.47], ["0.1em", "0.22em", "0.22em", "0.1em"]);
+    const beatCTracking = useTransform(scrollProgress, [0.48, 0.54, 0.67, 0.72], ["0.1em", "0.22em", "0.22em", "0.1em"]);
+
     const beatBBlurVal = useTransform(scrollProgress, [0.23, 0.29, 0.42, 0.47], [14, 0, 0, 14]);
     const beatBBlur = useTransform(beatBBlurVal, (v) => `blur(${v}px)`);
 
@@ -127,6 +132,69 @@ function Hero() {
             {/* Sticky Canvas & Wrapper */}
             <AntigravityCanvas onScrollProgress={handleScrollProgress} />
 
+            {/* Ambient Glows */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-40">
+                <motion.div 
+                    animate={{
+                        x: [-60, 60, -60],
+                        y: [-30, 30, -30],
+                    }}
+                    transition={{
+                        duration: 25,
+                        repeat: Infinity,
+                        ease: "linear"
+                    }}
+                    className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-teal-500/10 blur-[120px]"
+                />
+                <motion.div 
+                    animate={{
+                        x: [60, -60, 60],
+                        y: [30, -30, 30],
+                    }}
+                    transition={{
+                        duration: 30,
+                        repeat: Infinity,
+                        ease: "linear"
+                    }}
+                    className="absolute bottom-1/4 right-1/4 w-112.5 h-112.5 rounded-full bg-emerald-500/8 blur-[150px]"
+                />
+            </div>
+
+            {/* HUD Blueprint Frame */}
+            <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
+                <div className="sticky top-0 w-full h-screen p-4 md:p-10 flex flex-col justify-between">
+                    {/* Top Row */}
+                    <div className="flex justify-between items-start">
+                        <div className="flex flex-col gap-1 text-[8px] font-mono text-white/20 select-none">
+                            <span>SYS.LOC // SEC.ALPHA</span>
+                            <span>GRID: 2026.NEST</span>
+                        </div>
+                        <div className="text-[8px] font-mono text-white/20 select-none text-right">
+                            <span>LAT: 40.7128° N</span>
+                            <span>LNG: 74.0060° W</span>
+                        </div>
+                    </div>
+                    {/* Center Reticles */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        {/* Center crosshair */}
+                        <div className="w-4 h-4 relative flex items-center justify-center opacity-10">
+                            <div className="w-px h-4 bg-white" />
+                            <div className="w-4 h-px bg-white absolute" />
+                        </div>
+                    </div>
+                    {/* Bottom Row */}
+                    <div className="flex justify-between items-end">
+                        <div className="flex items-center gap-1.5 text-[8px] font-mono text-white/25 select-none">
+                            <span className="w-1.5 h-1.5 rounded-full bg-teal-400/50 animate-pulse" />
+                            <span>SYSTEM SECURE</span>
+                        </div>
+                        <div className="text-[8px] font-mono text-white/20 select-none">
+                            <span>VER: 4.10.NEST</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Scrollytelling Text & Component Overlays */}
             <div className="absolute inset-0 z-10 pointer-events-none">
                 <div className="sticky top-0 w-full h-screen flex items-center justify-center overflow-hidden">
@@ -143,9 +211,9 @@ function Hero() {
                             <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-teal-500/60" />
                             <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-teal-500/60" />
 
-                            <h2 className="text-white text-base md:text-3xl font-black tracking-wider uppercase leading-snug select-none">
+                            <motion.h2 style={{ letterSpacing: beatATracking }} className="text-white text-base md:text-3xl font-black uppercase leading-snug select-none">
                                 CAR ACQUISITION RE-ENGINEERED
-                            </h2>
+                            </motion.h2>
                             <p className="text-white/80 font-sans text-xs mt-2 leading-relaxed select-none">
                                 Welcome to DriveNest. Where exceptional machinery emerges from the digital void, offering unprecedented clarity.
                             </p>
@@ -181,9 +249,9 @@ function Hero() {
                             <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-teal-500/60" />
                             <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-teal-500/60" />
 
-                            <h2 className="text-white text-base md:text-3xl font-black tracking-wider uppercase leading-tight select-none">
+                            <motion.h2 style={{ letterSpacing: beatBTracking }} className="text-white text-base md:text-3xl font-black uppercase leading-tight select-none">
                                 UNCOMPROMISING<br />DETAIL
-                            </h2>
+                            </motion.h2>
                             <p className="text-white/80 font-sans text-xs mt-2 leading-relaxed select-none">
                                 We dismantle the mystery. Inspect every body panel, wheel structure, and cabin space suspended in zero-gravity.
                             </p>
@@ -219,9 +287,9 @@ function Hero() {
                             <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-teal-500/60" />
                             <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-teal-500/60" />
 
-                            <h2 className="text-white text-base md:text-3xl font-black tracking-wider uppercase leading-tight select-none">
+                            <motion.h2 style={{ letterSpacing: beatCTracking }} className="text-white text-base md:text-3xl font-black uppercase leading-tight select-none">
                                 ANATOMY OF<br />PERFORMANCE
-                            </h2>
+                            </motion.h2>
                             <p className="text-white/80 font-sans text-xs mt-2 leading-relaxed select-none">
                                 Witness the heart of luxury. A hand-built, twin-turbocharged V12 engine floating in pristine digital space.
                             </p>
@@ -257,12 +325,29 @@ function Hero() {
                     {/* Scroll To Explore Indicator (0% to 10%) */}
                     <motion.div
                         style={{ opacity: exploreOpacity, y: exploreY }}
-                        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center"
+                        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none"
                     >
-                        <span className="text-white/40 text-[9px] uppercase tracking-[0.3em] font-mono animate-pulse">
+                        <span className="text-white/40 text-[9px] uppercase tracking-[0.3em] font-mono mb-3.5 select-none">
                             Scroll to Explore
                         </span>
-                        <div className="w-px h-12 bg-linear-to-b from-white/30 to-transparent mt-4 animate-bounce" />
+                        {/* Premium Mouse Indicator */}
+                        <div className="w-6 h-10 rounded-full border-2 border-white/20 flex justify-center p-1.5 relative">
+                            {/* Animated Mouse Wheel Dot */}
+                            <motion.div
+                                animate={{ 
+                                    y: [0, 12, 0],
+                                    opacity: [1, 0.2, 1]
+                                }}
+                                transition={{ 
+                                    duration: 1.8, 
+                                    repeat: Infinity, 
+                                    ease: "easeInOut" 
+                                }}
+                                className="w-1.5 h-2 rounded-full bg-teal-400"
+                            />
+                        </div>
+                        {/* Vertical line indicator track */}
+                        <div className="w-px h-6 bg-linear-to-b from-teal-500/40 to-transparent mt-3" />
                     </motion.div>
 
                 </div>

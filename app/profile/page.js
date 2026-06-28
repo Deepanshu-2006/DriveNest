@@ -8,9 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getUserCarListings, deleteCarListing } from '@/app/actions/carListing'
 import CarItem from '../_components/CarItem'
 import { Inbox, User, List, Plus, Car, Mail, Calendar, Settings, AlertTriangle } from 'lucide-react'
-import { toast } from 'react-toastify'
 import dynamic from 'next/dynamic'
 import { getSendbirdUserId } from '@/lib/utils'
+import { showErrorToast, showSuccessToast } from '../_components/drive-toast'
 
 const SendbirdInbox = dynamic(() => import('../_components/SendbirdInbox'), {
     ssr: false,
@@ -62,14 +62,14 @@ function ProfileContent() {
         try {
             const res = await deleteCarListing(selectedCar.id);
             if (res.success) {
-                toast.success(`Listing for "${selectedCar.name}" deleted successfully.`);
+                showSuccessToast('Listing deleted', `"${selectedCar.name}" has been removed from your garage.`);
                 fetchUserListings();
             } else {
-                toast.error("Failed to delete listing: " + res.error);
+                showErrorToast('Delete failed', res.error || 'Please try deleting this listing again.');
             }
         } catch (error) {
             console.error("Error deleting listing:", error);
-            toast.error("An error occurred. Please try again.");
+            showErrorToast('Something went wrong', 'Please try deleting this listing again.');
         } finally {
             setDeletingId(null);
             setShowDeleteModal(false);

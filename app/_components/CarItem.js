@@ -38,6 +38,8 @@ function CarItem({ car, mode = 'view', onEdit, onDelete }) {
             onClick={handleCardClick}
             className={`relative border rounded-2xl hover:-translate-y-2 transition-all duration-300 ease-out cursor-pointer my-2 group overflow-hidden ${isDark ? 'border-white/10 bg-[#0f0f0f] text-white hover:border-teal-500/50 hover:shadow-[0_12px_40px_rgba(20,184,166,0.15)]' : 'border-gray-200 bg-white text-slate-900 hover:border-teal-500/40 hover:shadow-2xl'}`}
         >
+            {/* Premium Light-Beam Hover Shimmer */}
+            <div className="absolute inset-0 pointer-events-none z-20 -translate-x-full group-hover:translate-x-full bg-linear-to-r from-transparent via-white/12 to-transparent transition-transform duration-1000 ease-out -skew-x-20" />
             {car?.id && (
                 <button 
                     onClick={(e) => {
@@ -78,16 +80,16 @@ function CarItem({ car, mode = 'view', onEdit, onDelete }) {
                 <Separator className={`my-3 w-[90%] mx-auto h-px ${isDark ? 'bg-white/10' : 'bg-gray-200'}`} />
                 <div className='grid grid-cols-3 mt-5'>
                     <div className='flex flex-col items-center'>
-                        <Image src={fuel} width={25} height={25} className={`text-lg mb-1 ${isDark ? 'invert' : ''}`} alt="Fuel" />
-                        <h2 className='text-lg font-semibold'>{car.fuelType}</h2>
+                        <Image src={fuel} width={25} height={25} className={`mb-1 ${isDark ? 'invert' : ''}`} alt="Fuel" />
+                        <h2 className='text-xs md:text-sm font-medium tracking-wide mt-1 text-slate-500 dark:text-slate-400'>{car.fuelType}</h2>
                     </div>
                     <div className='flex flex-col items-center'>
-                        <Image src={gearshift} width={25} height={25} className={`text-lg mb-1 ${isDark ? 'invert' : ''}`} alt="Gear" />
-                        <h2 className='text-lg font-semibold'>{car.geartype}</h2>
+                        <Image src={gearshift} width={25} height={25} className={`mb-1 ${isDark ? 'invert' : ''}`} alt="Gear" />
+                        <h2 className='text-xs md:text-sm font-medium tracking-wide mt-1 text-slate-500 dark:text-slate-400'>{car.geartype}</h2>
                     </div>
                     <div className='flex flex-col items-center'>
-                        <Image src={speedometer} width={25} height={25} className={`text-lg mb-1 ${isDark ? 'invert' : ''}`} alt="Speedometer" />
-                        <h2 className='text-lg font-semibold'>{car.miles}</h2>
+                        <Image src={speedometer} width={25} height={25} className={`mb-1 ${isDark ? 'invert' : ''}`} alt="Speedometer" />
+                        <h2 className='text-xs md:text-sm font-medium tracking-wide mt-1 text-slate-500 dark:text-slate-400'>{car.miles}</h2>
                     </div>
                 </div>
                 <Separator className={`my-3 w-[90%] mx-auto h-px ${isDark ? 'bg-white/10' : 'bg-gray-200'}`} />

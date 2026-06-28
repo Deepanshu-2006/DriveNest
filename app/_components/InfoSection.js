@@ -40,6 +40,7 @@ function InfoSection() {
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
+    const [activeFaq, setActiveFaq] = useState(null);
 
     useEffect(() => {
         if (isHovered) return;
@@ -58,6 +59,25 @@ function InfoSection() {
     const handlePrev = () => {
         setCurrentIndex((prevIndex) => (prevIndex - 1 + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length);
     };
+
+    const faqs = [
+        {
+            q: "How do I list my car on DriveNest?",
+            a: "Simply sign in to your account, click on the \"Submit Listing\" button in the header, and fill out your vehicle specifications, pricing, features, and images. Your listing will go live instantly!"
+        },
+        {
+            q: "How do I compare different vehicles side-by-side?",
+            a: "Click on the compare icon in the upper-right corner of any vehicle card. You can select up to 3 vehicles. When ready, click \"Compare Now\" in the bottom bar to view detailed, highlighted side-by-side statistics."
+        },
+        {
+            q: "Can I message sellers directly?",
+            a: "Yes! Every listing has a built-in messaging portal. Log in, open the vehicle's detail page, type your query, and send. You can view all responses and active chats in your Inbox on the Profile page."
+        },
+        {
+            q: "How does the estimated monthly payment calculator work?",
+            a: "On each car's detail page, our built-in loan estimator automatically calculates monthly payments based on vehicle price, credit scores, APR rates, and customized down payments using real-time amortization formulas."
+        }
+    ];
 
     return (
         <section>
@@ -123,21 +143,81 @@ function InfoSection() {
                             >
                                 <ChevronRight className="w-6 h-6" />
                             </button>
-
-                            {/* Indicator Dots */}
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 p-1.5 rounded-full bg-black/30 backdrop-blur-md">
-                                {CAROUSEL_SLIDES.map((_, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => setCurrentIndex(index)}
-                                        className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${currentIndex === index
-                                                ? 'bg-teal-400 w-7'
-                                                : 'bg-white/50 hover:bg-white/80 w-2.5'
-                                            }`}
-                                    />
-                                ))}
-                            </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Visual Separator */}
+                <div className="w-full h-px my-16 bg-linear-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
+
+                {/* FAQ Section */}
+                <div className="max-w-3xl mx-auto mt-4">
+                    <div className="flex flex-col items-center text-center mb-10">
+                        <span className="text-xs font-bold tracking-widest text-teal-600 dark:text-teal-400 uppercase">
+                            Support & Info
+                        </span>
+                        <h3 className="mt-1 text-2xl md:text-3xl font-extrabold tracking-tight bg-linear-to-b from-slate-900 to-slate-700 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
+                            Frequently Asked Questions
+                        </h3>
+                    </div>
+
+                    <div className="space-y-4">
+                        {faqs.map((faq, index) => {
+                            const isOpen = activeFaq === index;
+                            return (
+                                <div 
+                                    key={index}
+                                    className={`border rounded-2xl overflow-hidden transition-all duration-300 ${
+                                        isOpen 
+                                            ? 'border-teal-500/50 bg-teal-500/2 dark:border-teal-400/30' 
+                                            : isDark 
+                                                ? 'border-white/5 bg-[#0f0f0f]/30 hover:border-white/10 hover:bg-[#0f0f0f]/50' 
+                                                : 'border-slate-200 bg-white hover:border-slate-300'
+                                    }`}
+                                >
+                                    <button
+                                        onClick={() => setActiveFaq(isOpen ? null : index)}
+                                        className="w-full flex items-center justify-between p-5 text-left cursor-pointer outline-none"
+                                    >
+                                        <span className={`text-sm md:text-base font-extrabold ${
+                                            isOpen 
+                                                ? 'text-teal-600 dark:text-teal-400' 
+                                                : isDark ? 'text-white' : 'text-slate-800'
+                                        }`}>
+                                            {faq.q}
+                                        </span>
+                                        <motion.span
+                                            animate={{ rotate: isOpen ? 180 : 0 }}
+                                            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                                            className={isOpen ? 'text-teal-500' : 'text-slate-400'}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </motion.span>
+                                    </button>
+
+                                    <motion.div
+                                        initial={false}
+                                        animate={isOpen ? "open" : "collapsed"}
+                                        variants={{
+                                            open: { height: "auto", opacity: 1 },
+                                            collapsed: { height: 0, opacity: 0 }
+                                        }}
+                                        transition={{ type: "spring", stiffness: 220, damping: 20 }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className={`px-5 pb-5 pt-1 text-xs md:text-sm leading-relaxed border-t border-dashed ${
+                                            isDark 
+                                                ? 'text-white/60 border-white/5' 
+                                                : 'text-slate-500 border-slate-100'
+                                        }`}>
+                                            {faq.a}
+                                        </div>
+                                    </motion.div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </motion.div>

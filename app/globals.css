@@ -187,3 +187,33 @@ html {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+.drivenest-toast-shell {
+  background: transparent !important;
+  box-shadow: none !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+.drivenest-toast-body {
+  padding: 0 !important;
+}
+
+.drivenest-toast-check {
+  animation: drivenest-toast-pop 320ms ease-out;
+}
+
+@keyframes drivenest-toast-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.72) rotate(-10deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.06) rotate(1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
