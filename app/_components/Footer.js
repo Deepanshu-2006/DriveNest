@@ -46,17 +46,6 @@ function Footer() {
                             </a>
                         </div>
 
-                        <ul className={`space-y-2 text-sm font-medium ${isDark ? 'text-white/60' : 'text-gray-500'}`}>
-                            <li className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
-                                Mon - Fri: 9:00 AM - 6:00 PM
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
-                                Weekend: 10:00 AM - 4:00 PM
-                            </li>
-                        </ul>
-
                         <ul className="mt-6 sm:mt-8 flex gap-5">
                             <li>
                                 <a href="#" rel="noreferrer" target="_blank" className={`transition-all duration-200 hover:scale-110 block ${isDark ? 'text-white/40 hover:text-teal-400' : 'text-gray-400 hover:text-teal-600'}`}>
