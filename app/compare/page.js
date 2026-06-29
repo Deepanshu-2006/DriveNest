@@ -444,7 +444,7 @@ function CompareContent() {
                         <p className="text-xl font-black text-teal-500 mt-1 text-start">${parseFloat(car.sellingPrice).toLocaleString()}</p>
                       </div>
                       <Link 
-                        href={`/listing-details/${car.id}`}
+                        href={isSignedIn ? `/listing-details/${car.id}` : '/sign-in'}
                         className="w-full py-2 px-4 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-center transition border dark:border-white/5 border-slate-200"
                       >
                         View Full Details

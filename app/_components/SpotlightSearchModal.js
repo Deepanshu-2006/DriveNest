@@ -163,7 +163,7 @@ export default function SpotlightSearchModal() {
     if (event.key === 'Enter') {
       event.preventDefault();
       if (previewListings[activeIndex]) {
-        router.push(`/listing-details/${previewListings[activeIndex].id}`);
+        router.push(isSignedIn ? `/listing-details/${previewListings[activeIndex].id}` : '/sign-in');
         closeSpotlight();
         return;
       }
@@ -286,7 +286,7 @@ export default function SpotlightSearchModal() {
                         previewListings.map((car, index) => (
                           <Link
                             key={car.id}
-                            href={`/listing-details/${car.id}`}
+                            href={isSignedIn ? `/listing-details/${car.id}` : '/sign-in'}
                             onMouseEnter={() => setActiveIndex(index)}
                             onClick={closeSpotlight}
                             className={`flex items-center gap-4 rounded-[26px] border px-3 py-3 transition-all ${

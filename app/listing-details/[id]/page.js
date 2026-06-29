@@ -71,6 +71,12 @@ function ListingDetails() {
   const [flatFees, setFlatFees] = useState(500);
 
   useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push('/sign-in');
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  useEffect(() => {
     if (listing) {
       const price = parseFloat(listing.sellingPrice) || 0;
       setCalcPrice(price);
@@ -708,7 +714,7 @@ function ListingDetails() {
                       <span className="font-extrabold text-orange-400">${Math.round(totalInterestPaid).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center pt-2 border-t border-dashed dark:border-white/5 border-slate-200 font-bold">
-                      <span className={isDark ? 'text-white/80' : 'text-slate-700'}>Total Cost of Loan</span>
+                      <span className={isDark ? 'text-white/80' : 'text-slate-700'}>Total Purchase Cost</span>
                       <span className="font-extrabold text-teal-500 text-sm">${Math.round(totalCost).toLocaleString()}</span>
                     </div>
                   </div>
